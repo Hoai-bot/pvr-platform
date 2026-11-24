@@ -654,7 +654,7 @@
     for (var j = 0; j < list.length; j++) {
       var item = list[j];
       rowsHtml += '<tr>' +
-        '<td><strong>' + item.pick_id + '</strong><br><span style="color:#94a3b8;">' + item.name + '</span></td>' +
+        '<td><strong>' + item.pick_id + '</strong> <span style="font-size:10px; color:#38bdf8;">(' + (item.gender || 'Nam') + ')</span><br><span style="color:#94a3b8;">' + item.name + '</span></td>' +
         '<td>' + item.ai_score + '</td>' +
         '<td style="color:#facc15; font-weight:700;">' + item.min_floor + '</td>' +
         '<td style="color:#10b981; font-weight:800;">' + item.cur_score + '</td>' +
@@ -685,7 +685,8 @@
       var a = window._pvrAthletes[i];
       if (String(a.pick_id).toUpperCase() === String(pickId).toUpperCase()) {
         a.trust_tier = cfg.tier;
-        var cur = parseFloat(a.cur_score) || 3.00;
+        var isFem = String(a.gender || '').trim().toLowerCase() === 'nữ';
+        var cur = parseFloat(a.cur_score) || (isFem ? 2.10 : 2.55);
         if (command === 'ANTI_SANDBAG_UP') {
           cur = parseFloat((cur + (boostDelta || 0.15)).toFixed(2));
           a.cur_score = cur.toFixed(2);
