@@ -611,7 +611,10 @@
           </div>
 
           <div id="single-player-fields" style="display:none;">
-            <div class="form-group"><label>Họ và tên VĐV (Đúng trên CCCD) *:</label><input type="text" class="form-control" id="match-name-single" placeholder="Nguyễn Văn A"></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:8px;">
+              <div class="form-group"><label>Họ và tên VĐV (Đúng trên CCCD) *:</label><input type="text" class="form-control" id="match-name-single" placeholder="Nguyễn Văn A"></div>
+              <div class="form-group"><label style="color:#38bdf8;">Giới tính *:</label><select class="form-control" id="match-gender-single"><option value="Nam">Nam (Sàn 2.55)</option><option value="Nữ">Nữ (Sàn 2.10)</option></select></div>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div class="form-group"><label style="color:#facc15; font-weight:bold;">Số CCCD (12 chữ số) *:</label><input type="text" maxlength="12" class="form-control" id="match-cccd-single" placeholder="079200008901"></div>
               <div class="form-group"><label>Số điện thoại / Zalo *:</label><input type="tel" class="form-control" id="match-phone-single" placeholder="0901234567"></div>
@@ -625,8 +628,9 @@
           <div id="doubles-player-fields">
             <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #38bdf8; margin-bottom:10px;">
               <div style="color:#38bdf8; font-weight:bold; font-size:12px; margin-bottom:6px;">👤 THÔNG TIN VĐV 1:</div>
-              <div style="display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:6px; margin-bottom:6px;">
+              <div style="display:grid; grid-template-columns:1.2fr 0.8fr 1fr 1fr; gap:6px; margin-bottom:6px;">
                 <div class="form-group" style="margin:0;"><label>Họ tên VĐV 1 *:</label><input type="text" class="form-control" id="match-name-p1" placeholder="Nguyễn Văn A"></div>
+                <div class="form-group" style="margin:0;"><label style="color:#38bdf8;">Giới tính:</label><select class="form-control" id="match-gender-p1"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
                 <div class="form-group" style="margin:0;"><label style="color:#facc15;">Số CCCD (12 số) *:</label><input type="text" maxlength="12" class="form-control" id="match-cccd-p1" placeholder="079200008901"></div>
                 <div class="form-group" style="margin:0;"><label>SĐT / Zalo 1 *:</label><input type="tel" class="form-control" id="match-phone-p1" placeholder="0901111111"></div>
               </div>
@@ -635,8 +639,9 @@
 
             <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #10b981; margin-bottom:10px;">
               <div style="color:#10b981; font-weight:bold; font-size:12px; margin-bottom:6px;">👤 THÔNG TIN VĐV 2:</div>
-              <div style="display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:6px; margin-bottom:6px;">
+              <div style="display:grid; grid-template-columns:1.2fr 0.8fr 1fr 1fr; gap:6px; margin-bottom:6px;">
                 <div class="form-group" style="margin:0;"><label>Họ tên VĐV 2 *:</label><input type="text" class="form-control" id="match-name-p2" placeholder="Trần Văn B"></div>
+                <div class="form-group" style="margin:0;"><label style="color:#10b981;">Giới tính:</label><select class="form-control" id="match-gender-p2"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
                 <div class="form-group" style="margin:0;"><label style="color:#facc15;">Số CCCD (12 số) *:</label><input type="text" maxlength="12" class="form-control" id="match-cccd-p2" placeholder="079200005678"></div>
                 <div class="form-group" style="margin:0;"><label>SĐT / Zalo 2 *:</label><input type="tel" class="form-control" id="match-phone-p2" placeholder="0902222222"></div>
               </div>
@@ -2939,7 +2944,7 @@
     const btn = document.getElementById('btn-submit-player-action');
     const regMode = document.getElementById('reg-mode-select').value;
     const ratingType = document.getElementById('match-rating-type-select').value || 'PVR';
-    const rating = parseFloat(document.getElementById('match-rating-value').value) || 5.3;
+    const rating = parseFloat(document.getElementById('match-rating-value').value) || (regMode === 'SINGLES' ? 2.55 : 5.10);
     const profileUrl = document.getElementById('match-profile-url').value.trim();
     const matchTypeVal = document.getElementById('match-type').value.trim() || 'Đôi Nam 5.3';
 
@@ -2962,7 +2967,9 @@
       fullName = sName;
       displayContact = `CCCD: ${maskCccdClient(sCccd)} | SĐT: ${sPhone}`;
       cccdsList = [sCccd];
-      playersDetail.push({ name: sName, cccd: sCccd, phone: sPhone, rating: rating, avatarUrl: regAvatarsCache.single || '' });
+      const sGender = document.getElementById('match-gender-single')?.value || 'Nam';
+      const sFloor = sGender === 'Nữ' ? 2.10 : 2.55;
+      playersDetail.push({ name: sName, cccd: sCccd, phone: sPhone, gender: sGender, rating: Math.max(sFloor, rating), avatarUrl: regAvatarsCache.single || '' });
 
     } else {
       const p1Name = document.getElementById('match-name-p1').value.trim();
@@ -2989,8 +2996,12 @@
       fullName = `${p1Name} / ${p2Name}`;
       displayContact = `CCCD: ${maskCccdClient(p1Cccd)} / ${maskCccdClient(p2Cccd)} | SĐT: ${p1Phone} / ${p2Phone}`;
       cccdsList = [p1Cccd, p2Cccd];
-      playersDetail.push({ name: p1Name, cccd: p1Cccd, phone: p1Phone, rating: (rating / 2).toFixed(2), avatarUrl: regAvatarsCache.p1 || '' });
-      playersDetail.push({ name: p2Name, cccd: p2Cccd, phone: p2Phone, rating: (rating / 2).toFixed(2), avatarUrl: regAvatarsCache.p2 || '' });
+      const p1Gender = document.getElementById('match-gender-p1')?.value || 'Nam';
+      const p2Gender = document.getElementById('match-gender-p2')?.value || 'Nam';
+      const p1Floor = p1Gender === 'Nữ' ? 2.10 : 2.55;
+      const p2Floor = p2Gender === 'Nữ' ? 2.10 : 2.55;
+      playersDetail.push({ name: p1Name, cccd: p1Cccd, phone: p1Phone, gender: p1Gender, rating: Math.max(p1Floor, rating / 2).toFixed(2), avatarUrl: regAvatarsCache.p1 || '' });
+      playersDetail.push({ name: p2Name, cccd: p2Cccd, phone: p2Phone, gender: p2Gender, rating: Math.max(p2Floor, rating / 2).toFixed(2), avatarUrl: regAvatarsCache.p2 || '' });
     }
 
     const dupTeam = isDuplicateInTournament(cccdsList, displayContact, matchTypeVal);

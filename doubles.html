@@ -229,12 +229,15 @@
         <div>
           <label>1. Chọn Nội Dung / Trần Điểm Cặp Đôi:</label>
           <select id="divisionCapSelect" class="form-control" onchange="handleCapPresetChange()">
-            <option value="4.50">Đôi Tập Sự / Newbie (Trần ≤ 4.50 PVR)</option>
-            <option value="5.00">Đôi Phong Trào 5.0 (Trần ≤ 5.00 PVR)</option>
-            <option value="5.50">Đôi Trung Cấp 5.5 (Trần ≤ 5.50 PVR)</option>
-            <option value="6.00" selected>Đôi Hỗn Hợp / Nam 6.0 (Trần ≤ 6.00 PVR)</option>
-            <option value="6.50">Đôi Nâng Cao 6.5 (Trần ≤ 6.50 PVR)</option>
-            <option value="7.00">Đôi Bán Chuyên 7.0 (Trần ≤ 7.00 PVR)</option>
+            <option value="4.20">Đôi Nữ Newbie 4.20 (Sàn Nữ 2.10 × 2)</option>
+            <option value="4.50">Đôi Newbie / Tập Sự 4.50 (Trần ≤ 4.50 PVR)</option>
+            <option value="4.80">Đôi Nam Nữ Phong Trào 4.80 (Trần ≤ 4.80 PVR)</option>
+            <option value="5.00">Đôi Phong Trào 5.00 (Trần ≤ 5.00 PVR)</option>
+            <option value="5.30">Đôi Trung Bình 5.30 (Trần ≤ 5.30 PVR)</option>
+            <option value="5.50">Đôi Khá / Trung Cấp 5.50 (Trần ≤ 5.50 PVR)</option>
+            <option value="6.00" selected>Đôi Hỗn Hợp / Nam 6.00 (Trần ≤ 6.00 PVR)</option>
+            <option value="6.50">Đôi Nâng Cao 6.50 (Trần ≤ 6.50 PVR)</option>
+            <option value="7.00">Đôi Bán Chuyên 7.00 (Trần ≤ 7.00 PVR)</option>
             <option value="8.00">Đôi Open / Chuyên Nghiệp (Trần ≤ 8.00 PVR)</option>
             <option value="custom">✏️ Tự nhập mức trần điểm khác...</option>
           </select>
@@ -307,7 +310,7 @@
             </div>
             <div>
               <label>Điểm PVR Hiện Tại:</label>
-              <input type="number" step="0.01" id="p2Score" class="form-control" value="2.85">
+              <input type="number" step="0.01" id="p2Score" class="form-control" value="2.55">
             </div>
           </div>
           <div style="margin-top:8px;">
@@ -423,7 +426,9 @@
       if (data && data.success && data.exists) {
         document.getElementById(`p${playerNum}PickId`).value = data.pickId || query.toUpperCase();
         document.getElementById(`p${playerNum}Name`).value = data.registeredName || '';
-        document.getElementById(`p${playerNum}Score`).value = parseFloat(data.currentPvr || 3.00).toFixed(2);
+        const isFem = String(data.gender || '').trim().toLowerCase() === 'nữ';
+        const genderDefault = isFem ? 2.10 : 2.55;
+        document.getElementById(`p${playerNum}Score`).value = parseFloat(data.currentPvr || genderDefault).toFixed(2);
 
         const stStr = String(data.trust_tier || data.flagStatus || '').toUpperCase();
         if (stStr.includes('GOLD') || stStr.includes('COURT') || stStr.includes('VÀNG')) {
