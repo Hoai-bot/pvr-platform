@@ -620,6 +620,15 @@
               <input type="text" id="vdv_cccd_id" maxlength="12" class="form-control" placeholder="Nhập 12 số CCCD (VD: 079200008901)..." data-vi-placeholder="Nhập 12 số CCCD (VD: 079200008901)..." data-en-placeholder="12-Digit Citizen ID (e.g., 079200008901)...">
             </div>
           </div>
+          <div style="margin-top:10px;">
+            <div style="font-size:11px; font-weight:700; color:#cbd5e1; margin-bottom:6px;" data-vi="Giới tính VĐV (Chuẩn hóa sàn khởi điểm Nam 2.55 / Nữ 2.10 PVR):" data-en="Athlete Gender (Calibrates floor rating Male 2.55 / Female 2.10 PVR):">
+              Giới tính VĐV (Chuẩn hóa sàn khởi điểm Nam 2.55 / Nữ 2.10 PVR):
+            </div>
+            <div class="badge-group" id="group-gender">
+              <span class="badge-opt active" onclick="selectGenderForAi('Nam', this)" data-vi="👨 Nam (Sàn chuẩn 2.55 PVR)" data-en="👨 Male (Floor 2.55 PVR)">👨 Nam (Sàn chuẩn 2.55 PVR)</span>
+              <span class="badge-opt" onclick="selectGenderForAi('Nữ', this)" data-vi="👩 Nữ (Sàn chuẩn 2.10 PVR)" data-en="👩 Female (Floor 2.10 PVR)">👩 Nữ (Sàn chuẩn 2.10 PVR)</span>
+            </div>
+          </div>
           <div style="margin-top:8px; display:flex; align-items:flex-start; gap:6px;">
             <input type="checkbox" id="ai_pdpa_consent" checked style="margin-top:2px; accent-color:#10b981; cursor:pointer;">
             <label for="ai_pdpa_consent" style="margin:0; font-size:10px; color:#94a3b8; font-weight:400; line-height:1.4; cursor:pointer;" data-vi="Đồng ý mã hóa SHA-256 12 số CCCD theo Nghị định 13/2023/NĐ-CP để cấp thẻ PICK-ID." data-en="I consent to SHA-256 hashing of my 12-digit Citizen ID under Decree 13/2023/ND-CP for PICK-ID issuance.">
@@ -738,10 +747,10 @@
         <!-- 8. Hạng & Tỷ lệ thắng -->
         <div class="form-group grid-2">
           <div>
-            <label data-vi="Hạng Đăng Ký Giải:" data-en="Register Tier:">Hạng Đăng Ký Giải:</label>
+            <label id="tierSelectLabel" data-vi="Hạng Đăng Ký Giải (Chuẩn Nam):" data-en="Register Tier (Male Standard):">Hạng Đăng Ký Giải (Chuẩn Nam):</label>
             <select id="player_tier" class="form-control">
-              <option value="beginner" data-vi="Newbie (2.00 – 2.39 PVR • DUPR 2.00 – 2.75)" data-en="Newbie (2.00 – 2.39 PVR • DUPR 2.00 – 2.75)">Newbie (2.00 – 2.39 PVR • DUPR 2.00 – 2.75)</option>
-              <option value="social" data-vi="Trung bình / Khá (2.40 – 2.99 PVR • DUPR 2.90 – 4.05)" data-en="Intermediate (2.40 – 2.99 PVR • DUPR 2.90 – 4.05)">Trung bình / Khá (2.40 – 2.99 PVR • DUPR 2.90 – 4.05)</option>
+              <option value="beginner" data-vi="Newbie Nam (2.50 – 2.60 PVR • DUPR 3.15 – 3.35)" data-en="Male Newbie (2.50 – 2.60 PVR • DUPR 3.15 – 3.35)">Newbie Nam (2.50 – 2.60 PVR • DUPR 3.15 – 3.35)</option>
+              <option value="social" data-vi="Trung bình / Khá Nam (2.65 – 2.99 PVR • DUPR 3.45 – 4.05)" data-en="Male Intermediate (2.65 – 2.99 PVR • DUPR 3.45 – 4.05)">Trung bình / Khá Nam (2.65 – 2.99 PVR • DUPR 3.45 – 4.05)</option>
               <option value="intermediate" selected data-vi="Nâng cao / Trình cao (3.00 – 3.19 PVR • DUPR 4.25 – 4.55)" data-en="Advanced (3.00 – 3.19 PVR • DUPR 4.25 – 4.55)">Nâng cao / Trình cao (3.00 – 3.19 PVR • DUPR 4.25 – 4.55)</option>
               <option value="semi_pro" data-vi="Bán chuyên / Top Amateur (3.20 – 3.49 PVR • DUPR 4.70 – 5.15)" data-en="Top Amateur (3.20 – 3.49 PVR • DUPR 4.70 – 5.15)">Bán chuyên / Top Amateur (3.20 – 3.49 PVR • DUPR 4.70 – 5.15)</option>
               <option value="pro" data-vi="Chuyên nghiệp VN / Pro (3.50+ PVR • DUPR 5.30+)" data-en="VN Pro (3.50+ PVR • DUPR 5.30+)">Chuyên nghiệp VN / Pro (3.50+ PVR • DUPR 5.30+)</option>
@@ -904,6 +913,7 @@
   let activeVideoMode = 'file';
 
   const selectedValues = {
+    gender: 'Nam',
     court_pos: 'near_right',
     shirt: 'Áo Trắng',
     pants: 'Quần Đen',
@@ -911,6 +921,48 @@
     headwear: 'Không Đội Mũ',
     body: 'athletic'
   };
+
+  const GENDER_TIERS = {
+    Nam: [
+      { value: 'beginner', vi: 'Newbie Nam (2.50 – 2.60 PVR • DUPR 3.15 – 3.35)', en: 'Male Newbie (2.50 – 2.60 PVR • DUPR 3.15 – 3.35)' },
+      { value: 'social', vi: 'Trung bình / Khá Nam (2.65 – 2.99 PVR • DUPR 3.45 – 4.05)', en: 'Male Intermediate (2.65 – 2.99 PVR • DUPR 3.45 – 4.05)' },
+      { value: 'intermediate', vi: 'Nâng cao / Trình cao (3.00 – 3.19 PVR • DUPR 4.25 – 4.55)', en: 'Advanced (3.00 – 3.19 PVR • DUPR 4.25 – 4.55)' },
+      { value: 'semi_pro', vi: 'Bán chuyên / Top Amateur (3.20 – 3.49 PVR • DUPR 4.70 – 5.15)', en: 'Top Amateur (3.20 – 3.49 PVR • DUPR 4.70 – 5.15)' },
+      { value: 'pro', vi: 'Chuyên nghiệp VN / Pro (3.50+ PVR • DUPR 5.30+)', en: 'VN Pro (3.50+ PVR • DUPR 5.30+)' }
+    ],
+    Nữ: [
+      { value: 'beginner', vi: 'Newbie Nữ (2.05 – 2.15 PVR • DUPR 2.10 – 2.35)', en: 'Female Newbie (2.05 – 2.15 PVR • DUPR 2.10 – 2.35)' },
+      { value: 'newbie_plus', vi: 'Newbie Nâng Cao Nữ (2.20 – 2.35 PVR • DUPR 2.45 – 2.75)', en: 'Female Advanced Newbie (2.20 – 2.35 PVR • DUPR 2.45 – 2.75)' },
+      { value: 'social', vi: 'Trung bình Nữ (2.40 – 2.65 PVR • DUPR 2.90 – 3.40)', en: 'Female Intermediate (2.40 – 2.65 PVR • DUPR 2.90 – 3.40)' },
+      { value: 'intermediate', vi: 'Khá / Nâng cao Nữ (2.70 – 3.19 PVR • DUPR 3.55 – 4.55)', en: 'Female Advanced (2.70 – 3.19 PVR • DUPR 3.55 – 4.55)' },
+      { value: 'semi_pro', vi: 'Bán chuyên / Pro Nữ (3.20+ PVR • DUPR 4.70+)', en: 'Female Top Amateur / Pro (3.20+ PVR • DUPR 4.70+)' }
+    ]
+  };
+
+  function selectGenderForAi(genderVal, el) {
+    selectedValues.gender = genderVal;
+    document.querySelectorAll('#group-gender .badge-opt').forEach(b => b.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    const sel = document.getElementById('player_tier');
+    const lbl = document.getElementById('tierSelectLabel');
+    if (lbl) {
+      const viTxt = genderVal === 'Nữ' ? 'Hạng Đăng Ký Giải (Chuẩn Nữ):' : 'Hạng Đăng Ký Giải (Chuẩn Nam):';
+      const enTxt = genderVal === 'Nữ' ? 'Register Tier (Female Standard):' : 'Register Tier (Male Standard):';
+      lbl.setAttribute('data-vi', viTxt);
+      lbl.setAttribute('data-en', enTxt);
+      lbl.innerText = currentLang === 'vi' ? viTxt : enTxt;
+    }
+
+    if (sel) {
+      const prevVal = sel.value;
+      const list = GENDER_TIERS[genderVal] || GENDER_TIERS.Nam;
+      sel.innerHTML = list.map(opt => {
+        const isSel = (opt.value === prevVal || (!list.some(x => x.value === prevVal) && opt.value === 'beginner')) ? 'selected' : '';
+        return `<option value="${opt.value}" data-vi="${opt.vi}" data-en="${opt.en}" ${isSel}>${currentLang === 'vi' ? opt.vi : opt.en}</option>`;
+      }).join('');
+    }
+  }
 
   const isCustomActive = {
     shirt: false,
@@ -1234,6 +1286,7 @@
     formData.append('shoe_color', shoesVal);
     formData.append('headwear', headwearVal);
     formData.append('body_type', bodyVal || 'athletic');
+    formData.append('gender', selectedValues.gender || 'Nam');
     formData.append('player_tier', document.getElementById('player_tier').value);
     formData.append('match_wins', document.getElementById('match_wins').value || '0');
     formData.append('total_matches', document.getElementById('total_matches').value || '0');
@@ -1333,19 +1386,24 @@
       rawServerScore = 2.25 + ((compNum - 35.0) / 65.0) * 1.35;
     }
 
-    // 2. Hiệu chuẩn chuẩn xác theo tỷ lệ thắng & điểm thực tế (Minh 59.4% -> ~3.12-3.16, Thành 45.5% -> ~3.06-3.10)
-    let finalScore = 3.00;
+    const activeGender = resData.gender || selectedValues.gender || 'Nam';
+    const isFemaleAi = String(activeGender).toLowerCase() === 'nữ';
+    const genderFloor = isFemaleAi ? 2.10 : 2.55;
+
+    // 2. Hiệu chuẩn chuẩn xác theo giới tính (Nữ sàn 2.10 / Nam sàn 2.55) & tỷ lệ thắng thực tế
+    let finalScore = genderFloor;
     if (totalInput >= 10) {
-      // Quy đổi mượt theo tỷ lệ thắng: 45.5% -> ~3.08 PVR, 59.4% -> ~3.15 PVR
       const rateDelta = (winRate - 0.35) * 0.62;
       const volDelta = Math.min(0.03, (totalInput / 300) * 0.03);
-      finalScore = 2.98 + rateDelta + volDelta;
+      finalScore = (isFemaleAi ? 2.65 : 2.98) + rateDelta + volDelta;
     } else {
-      // Khi chưa nhập lịch sử trận: quy đổi từ sinh học cơ thể (76.7 -> 3.00 PVR)
-      finalScore = 2.13 + ((compNum - 35.0) / 65.0) * 1.35;
+      // Quy đổi từ điểm sinh học Biomechanics (compNum: 35 -> 100) theo dải chuẩn của Nam hoặc Nữ
+      const baseStart = isFemaleAi ? 2.05 : 2.50;
+      const spanRange = isFemaleAi ? 1.35 : 1.15;
+      finalScore = baseStart + (Math.max(0, compNum - 35.0) / 65.0) * spanRange;
     }
 
-    let numericScore = parseFloat(Math.max(2.00, Math.min(5.50, finalScore)).toFixed(2));
+    let numericScore = parseFloat(Math.max(genderFloor, Math.min(5.50, finalScore)).toFixed(2));
     const ratingVal = `${numericScore.toFixed(2)} PVR`;
     // Khóa sàn chống rửa điểm luôn cố định lệch đúng 0.15 PVR so với điểm cao nhất
     const floorLockVal = parseFloat(Math.max(2.00, numericScore - 0.15).toFixed(2));
@@ -1359,7 +1417,8 @@
     let pickIdVal = resData.pick_id || (resData.qr_certified_seal ? resData.qr_certified_seal.pick_id : null) || resData.player_id || resData.id || 'PICK-VERIFIED';
     pickIdVal = pickIdVal.replace('PVNA-LD', 'PICK').replace('PVNA-TN', 'PICK').replace('PKL-', 'PICK-');
 
-    const visualText = resData.vp || getSelectedVisualProfile(currentLang);
+    const genderLabel = isFemaleAi ? (currentLang === 'vi' ? '👩 Nữ' : '👩 Female') : (currentLang === 'vi' ? '👨 Nam' : '👨 Male');
+    const visualText = resData.vp || `${genderLabel} | ${getSelectedVisualProfile(currentLang)}`;
     const maskedCccd = (vdvCccd && vdvCccd.length === 12) ? `${vdvCccd.slice(0, 4)}****${vdvCccd.slice(-4)}` : '';
     const identityHeader = vdvName ? `<strong>${vdvName}</strong> ${maskedCccd ? '(ID: ' + maskedCccd + ')' : ''}<br>` : '';
 
@@ -1408,6 +1467,7 @@
           cccd_masked: maskedCccd,
           full_name: vdvName,
           pvr_score: numericScore.toFixed(2),
+          gender: activeGender,
           recommended_tier: tierVal,
           trust_tier: trustInfo.tier,
           wins: document.getElementById('match_wins').value || '0',
