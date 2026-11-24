@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVR Doubles Cap Validator - Công Cụ Ghép Cặp & Kiểm Tra Tổng Điểm</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-gold: #facc15;
+      --accent-red: #ef4444;
+      --text-muted: #94a3b8;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: var(--bg-main);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container { width: 100%; max-width: 720px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .brand { font-size: 16px; font-weight: 800; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .card-title { font-size: 15px; font-weight: 800; color: var(--accent-gold); margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px; }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--accent-blue); }
+
+    .player-panel {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .player-panel h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
+
+    .tick-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tick-gold { background: rgba(250, 204, 21, 0.2); border: 1px solid #facc15; color: #facc15; }
+    .tick-blue { background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; }
+    .tick-grey { background: rgba(148, 163, 184, 0.2); border: 1px solid #94a3b8; color: #94a3b8; }
+
+    .btn-lookup {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-lookup:hover { background: var(--accent-blue); color: #000; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #0284c7, #16a34a);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    }
+    .btn-submit:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    .result-box {
+      display: none;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid var(--accent-gold);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+    .cap-meter {
+      background: #0f172a;
+      border-radius: 10px;
+      height: 14px;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #334155;
+      margin: 12px 0;
+    }
+    .cap-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      transition: width 0.4s ease;
+    }
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .stat-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+    }
+    .status-banner {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .status-ok { background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #6ee7b7; }
+    .status-warn { background: rgba(250, 204, 21, 0.18); border: 1px solid #facc15; color: #fde047; }
+    .status-err { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+  
+    .pvr-global-nav {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto 16px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: rgba(30, 41, 59, 0.92);
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .pvr-nav-pill {
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .pvr-nav-pill:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .pvr-nav-pill.nav-home { background: #0f172a; color: #38bdf8 !important; border-color: #38bdf8; }
+    .pvr-nav-pill.nav-ai { background: #facc15; color: #000 !important; }
+    .pvr-nav-pill.nav-hub { background: linear-gradient(135deg, #0284c7, #10b981); color: #fff !important; }
+    .pvr-nav-pill.nav-events { background: #1e1b4b; color: #c084fc !important; border-color: #a855f7; }
+    .pvr-nav-pill.nav-doubles { background: #064e3b; color: #6ee7b7 !important; border-color: #10b981; }
+    .pvr-nav-pill.nav-admin { background: #334155; color: #facc15 !important; border-color: #64748b; }
+    .pvr-nav-pill.is-current { box-shadow: 0 0 0 2px #fff; pointer-events: none; opacity: 0.95; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="pvr-global-nav">
+      <a href="/" class="pvr-nav-pill nav-home">🏠 Trang Chủ</a>
+      <a href="/ai-passport" class="pvr-nav-pill nav-ai">🚀 AI Chấm Trình</a>
+      <a href="/live-hub" class="pvr-nav-pill nav-hub">🏟️ Sân Đấu & VAR</a>
+      <a href="/events" class="pvr-nav-pill nav-events">📅 Sự Kiện & Ảnh Giải</a>
+      <a href="/doubles" class="pvr-nav-pill nav-doubles is-current">🤝 Ghép Cặp Đôi</a>
+      <a href="/athletes" class="pvr-nav-pill" style="background:#1e293b; color:#facc15 !important; border-color:#facc15;">🪪 Hồ Sơ & BXH VĐV</a>
+      <a href="/admin" class="pvr-nav-pill nav-admin">🛡️ Quản Trị Mod</a>
+    </nav>
+    <div class="header">
+      <div class="brand"><i class="fa-solid fa-people-arrows"></i> PVR DOUBLES CAP VALIDATOR • GHÉP CẶP ĐÁNH ĐÔI</div>
+      <span style="font-size:11px; color:var(--accent-green); font-weight:700;">✔ Chuẩn PVR V8.5</span>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title"><i class="fa-solid fa-calculator"></i> KIỂM TRA TỔNG ĐIỂM CẶP ĐÔI & ĐIỀU KIỆN BẢNG ĐẤU</h3>
+      <div class="card-sub">
+        Nhập mã <strong>PICK-ID</strong> của 2 VĐV (hoặc tra cứu trực tiếp từ kho dữ liệu giải) để tự động tính tổng trình cặp đôi, kiểm tra màu Tick xác thực và đối chiếu trần nội dung thi đấu.
+      </div>
+
+      <!-- CHỌN NỘI DUNG & TRẦN ĐIỂM GIẢI ĐẤU -->
+      <div class="grid-2 form-group">
+        <div>
+          <label>1. Chọn Nội Dung / Trần Điểm Cặp Đôi:</label>
+          <select id="divisionCapSelect" class="form-control" onchange="handleCapPresetChange()">
+            <option value="4.50">Đôi Tập Sự / Newbie (Trần ≤ 4.50 PVR)</option>
+            <option value="5.00">Đôi Phong Trào 5.0 (Trần ≤ 5.00 PVR)</option>
+            <option value="5.50">Đôi Trung Cấp 5.5 (Trần ≤ 5.50 PVR)</option>
+            <option value="6.00" selected>Đôi Hỗn Hợp / Nam 6.0 (Trần ≤ 6.00 PVR)</option>
+            <option value="6.50">Đôi Nâng Cao 6.5 (Trần ≤ 6.50 PVR)</option>
+            <option value="7.00">Đôi Bán Chuyên 7.0 (Trần ≤ 7.00 PVR)</option>
+            <option value="8.00">Đôi Open / Chuyên Nghiệp (Trần ≤ 8.00 PVR)</option>
+            <option value="custom">✏️ Tự nhập mức trần điểm khác...</option>
+          </select>
+        </div>
+        <div>
+          <label>2. Trần Điểm Tối Đa & Dung Sai Cho Phép:</label>
+          <div style="display:flex; gap:6px;">
+            <input type="number" step="0.05" id="customCapInput" class="form-control" value="6.00" placeholder="Trần điểm">
+            <select id="toleranceSelect" class="form-control" style="max-width:135px;">
+              <option value="0.00">Dung sai: +0.00</option>
+              <option value="0.05" selected>Dung sai: +0.05</option>
+              <option value="0.10">Dung sai: +0.10</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- THÔNG TIN 2 VĐV -->
+      <div class="grid-2">
+        <!-- VĐV 1 -->
+        <div class="player-panel">
+          <h4>
+            <span>👤 VĐV THỨ NHẤT (PLAYER 1)</span>
+            <span id="p1TickBadge" class="tick-badge tick-blue">🔵 TICK XANH</span>
+          </h4>
+          <div class="form-group">
+            <label>Mã PICK-ID VĐV 1:</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="p1PickId" class="form-control" value="PICK-CB3FCFCB" placeholder="PICK-ID, CCCD hoặc SĐT..." onkeypress="if(event.key==='Enter') lookupAthlete(1)">
+              <button type="button" class="btn-lookup" onclick="lookupAthlete(1, this)">🔍 Tra Cứu</button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Họ Tên VĐV 1:</label>
+              <input type="text" id="p1Name" class="form-control" value="Minh">
+            </div>
+            <div>
+              <label>Điểm PVR Hiện Tại:</label>
+              <input type="number" step="0.01" id="p1Score" class="form-control" value="3.12">
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <label>Trạng Thái Xác Thực:</label>
+            <select id="p1Status" class="form-control" onchange="updateTickUI(1)">
+              <option value="GOLD">🟡 Tick Vàng • Court Certified (Chốt trình)</option>
+              <option value="BLUE" selected>🔵 Tick Xanh • AI Verified (Tạm tính)</option>
+              <option value="GREY">⚪ Tick Xám • Điểm tự khai / Chờ duyệt</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- VĐV 2 -->
+        <div class="player-panel">
+          <h4>
+            <span>👤 VĐV THỨ HAI (PLAYER 2)</span>
+            <span id="p2TickBadge" class="tick-badge tick-gold">🟡 TICK VÀNG</span>
+          </h4>
+          <div class="form-group">
+            <label>Mã PICK-ID VĐV 2:</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="p2PickId" class="form-control" placeholder="PICK-ID, CCCD hoặc SĐT..." onkeypress="if(event.key==='Enter') lookupAthlete(2)">
+              <button type="button" class="btn-lookup" onclick="lookupAthlete(2, this)">🔍 Tra Cứu</button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Họ Tên VĐV 2:</label>
+              <input type="text" id="p2Name" class="form-control" placeholder="Nhập tên đồng đội...">
+            </div>
+            <div>
+              <label>Điểm PVR Hiện Tại:</label>
+              <input type="number" step="0.01" id="p2Score" class="form-control" value="2.85">
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <label>Trạng Thái Xác Thực:</label>
+            <select id="p2Status" class="form-control" onchange="updateTickUI(2)">
+              <option value="GOLD" selected>🟡 Tick Vàng • Court Certified (Chốt trình)</option>
+              <option value="BLUE">🔵 Tick Xanh • AI Verified (Tạm tính)</option>
+              <option value="GREY">⚪ Tick Xám • Điểm tự khai / Chờ duyệt</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-submit" onclick="validateDoublesPair()">
+        ⚡ KIỂM TRA TỔNG ĐIỂM & XÁC NHẬN GHÉP CẶP
+      </button>
+
+      <!-- KẾT QUẢ KIỂM TRA GHÉP CẶP -->
+      <div id="pairResultBox" class="result-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+          <strong style="color:var(--accent-gold); font-size:14px;">📊 KẾT QUẢ THẨM ĐỊNH CẶP ĐẤU</strong>
+          <span id="pairCodeTag" style="font-size:11px; color:var(--accent-blue); font-weight:700;">PAIR-CHECK</span>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-card">
+            <div style="font-size:10px; color:var(--text-muted);">TỔNG ĐIỂM CẶP</div>
+            <div id="resTotalScore" style="font-size:22px; font-weight:800; color:var(--accent-blue);">5.97</div>
+          </div>
+          <div class="stat-card">
+            <div style="font-size:10px; color:var(--text-muted);">TRẦN NỘI DUNG</div>
+            <div id="resMaxCap" style="font-size:22px; font-weight:800; color:var(--accent-gold);">6.00</div>
+          </div>
+          <div class="stat-card">
+            <div style="font-size:10px; color:var(--text-muted);">CHÊNH LỆCH</div>
+            <div id="resMargin" style="font-size:22px; font-weight:800; color:var(--accent-green);">-0.03</div>
+          </div>
+        </div>
+
+        <div class="cap-meter">
+          <div id="capFillBar" class="cap-fill"></div>
+        </div>
+
+        <div id="pairSummaryDetail" style="font-size:12px; color:#cbd5e1; line-height:1.6;"></div>
+        <div id="pairStatusBanner" class="status-banner status-ok"></div>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+          <a href="/live-hub" style="background:linear-gradient(135deg,#0284c7,#10b981); color:#fff; padding:9px 16px; border-radius:10px; font-size:12px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+            📝 Đăng Ký Cặp Đôi Này Vào Giải Đấu ➔
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const GOOGLE_SCRIPT_BACKEND = 'https://script.google.com/macros/s/AKfycbzd5fvXcY61jf1MmcTY1r-9xZOCJs58hBGV66K8ghGG-ZH7_kTuU18AxV2oHL1HWWe7LA/exec';
+
+  function handleCapPresetChange() {
+    const sel = document.getElementById('divisionCapSelect').value;
+    const capInput = document.getElementById('customCapInput');
+    if (sel !== 'custom') {
+      capInput.value = parseFloat(sel).toFixed(2);
+    } else {
+      capInput.focus();
+    }
+  }
+
+  function updateTickUI(playerNum) {
+    const status = document.getElementById(`p${playerNum}Status`).value;
+    const badge = document.getElementById(`p${playerNum}TickBadge`);
+    badge.className = 'tick-badge';
+    if (status === 'GOLD') {
+      badge.classList.add('tick-gold');
+      badge.innerText = '🟡 TICK VÀNG';
+    } else if (status === 'BLUE') {
+      badge.classList.add('tick-blue');
+      badge.innerText = '🔵 TICK XANH';
+    } else {
+      badge.classList.add('tick-grey');
+      badge.innerText = '⚪ TICK XÁM';
+    }
+  }
+
+  function showInlineAlert(msg, isError = false) {
+    let el = document.getElementById('doublesToast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'doublesToast';
+      el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:25px;font-size:12.5px;font-weight:800;color:#fff;z-index:99999;border:1px solid #facc15;box-shadow:0 8px 25px rgba(0,0,0,0.5);';
+      document.body.appendChild(el);
+    }
+    el.innerText = msg;
+    el.style.background = isError ? '#ef4444' : '#10b981';
+    el.style.display = 'block';
+    clearTimeout(window._dToast);
+    window._dToast = setTimeout(() => { el.style.display = 'none'; }, 3500);
+  }
+
+  async function lookupAthlete(playerNum, btnEl) {
+    const query = document.getElementById(`p${playerNum}PickId`).value.trim();
+    if (!query) {
+      showInlineAlert('⚠️ Vui lòng nhập mã PICK-ID, CCCD hoặc SĐT VĐV!', true);
+      return;
+    }
+
+    const btn = btnEl || (typeof event !== 'undefined' ? event.target : null);
+    const origText = btn ? btn.innerText : '🔍 Tra Cứu';
+    if (btn) { btn.innerText = '⏳...'; btn.disabled = true; }
+
+    try {
+      const res = await fetch(`${GOOGLE_SCRIPT_BACKEND}?action=getAthleteProfile&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data && data.success && data.exists) {
+        document.getElementById(`p${playerNum}PickId`).value = data.pickId || query.toUpperCase();
+        document.getElementById(`p${playerNum}Name`).value = data.registeredName || '';
+        document.getElementById(`p${playerNum}Score`).value = parseFloat(data.currentPvr || 3.00).toFixed(2);
+
+        const stStr = String(data.trust_tier || data.flagStatus || '').toUpperCase();
+        if (stStr.includes('GOLD') || stStr.includes('COURT') || stStr.includes('VÀNG')) {
+          document.getElementById(`p${playerNum}Status`).value = 'GOLD';
+        } else if (stStr.includes('GREY') || stStr.includes('RETAKE') || stStr.includes('XÁM')) {
+          document.getElementById(`p${playerNum}Status`).value = 'GREY';
+        } else {
+          document.getElementById(`p${playerNum}Status`).value = 'BLUE';
+        }
+        updateTickUI(playerNum);
+        validateDoublesPair();
+        showInlineAlert(`✅ Đã tải hồ sơ ${data.pickId} - ${data.registeredName} (${parseFloat(data.currentPvr).toFixed(2)} PVR)`);
+      } else {
+        showInlineAlert(`ℹ️ Không tìm thấy hồ sơ cho "${query}".`, true);
+      }
+    } catch (e) {
+      showInlineAlert('❌ Lỗi kết nối máy chủ tra cứu!', true);
+    } finally {
+      if (btn) { btn.innerText = origText; btn.disabled = false; }
+    }
+  }
+
+  function validateDoublesPair() {
+    const p1Name = document.getElementById('p1Name').value.trim() || 'VĐV 1';
+    const p2Name = document.getElementById('p2Name').value.trim() || 'VĐV 2';
+    const p1Id = document.getElementById('p1PickId').value.trim().toUpperCase() || 'N/A';
+    const p2Id = document.getElementById('p2PickId').value.trim().toUpperCase() || 'N/A';
+
+    const p1Score = parseFloat(document.getElementById('p1Score').value) || 0;
+    const p2Score = parseFloat(document.getElementById('p2Score').value) || 0;
+
+    const p1Tick = document.getElementById('p1Status').value;
+    const p2Tick = document.getElementById('p2Status').value;
+
+    const maxCap = parseFloat(document.getElementById('customCapInput').value) || 6.00;
+    const tolerance = parseFloat(document.getElementById('toleranceSelect').value) || 0.00;
+    const hardLimit = maxCap + tolerance;
+
+    const totalScore = parseFloat((p1Score + p2Score).toFixed(2));
+    const diff = parseFloat((totalScore - maxCap).toFixed(2));
+
+    document.getElementById('pairResultBox').style.display = 'block';
+    document.getElementById('pairCodeTag').innerText = `${p1Id} + ${p2Id}`;
+    document.getElementById('resTotalScore').innerText = totalScore.toFixed(2);
+    document.getElementById('resMaxCap').innerText = maxCap.toFixed(2);
+
+    const marginEl = document.getElementById('resMargin');
+    marginEl.innerText = (diff > 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2));
+    marginEl.style.color = (totalScore <= hardLimit) ? '#10b981' : '#ef4444';
+
+    const pct = Math.min(100, Math.round((totalScore / Math.max(0.1, hardLimit)) * 100));
+    const fillBar = document.getElementById('capFillBar');
+    fillBar.style.width = `${pct}%`;
+    fillBar.style.background = (totalScore <= hardLimit)
+      ? 'linear-gradient(90deg, #10b981, #38bdf8)'
+      : 'linear-gradient(90deg, #f59e0b, #ef4444)';
+
+    const tickLabelMap = {
+      GOLD: '🟡 Tick Vàng (Chốt trình)',
+      BLUE: '🔵 Tick Xanh (AI Verified)',
+      GREY: '⚪ Tick Xám (Chờ xác thực)'
+    };
+
+    document.getElementById('pairSummaryDetail').innerHTML = `
+      • <strong>${p1Name}</strong> (${p1Id}): <strong>${p1Score.toFixed(2)} PVR</strong> — ${tickLabelMap[p1Tick]}<br>
+      • <strong>${p2Name}</strong> (${p2Id}): <strong>${p2Score.toFixed(2)} PVR</strong> — ${tickLabelMap[p2Tick]}<br>
+      • Giới hạn trần bảng đấu: <strong>${maxCap.toFixed(2)} PVR</strong> (Dung sai tối đa: <strong>${hardLimit.toFixed(2)} PVR</strong>)
+    `;
+
+    const banner = document.getElementById('pairStatusBanner');
+    banner.className = 'status-banner';
+
+    if (totalScore > hardLimit) {
+      banner.classList.add('status-err');
+      banner.innerText = `❌ KHÔNG ĐỦ ĐIỀU KIỆN: Tổng điểm cặp (${totalScore.toFixed(2)}) vượt trần cho phép (${hardLimit.toFixed(2)} PVR)!`;
+    } else if (p1Tick === 'GREY' || p2Tick === 'GREY') {
+      banner.classList.add('status-warn');
+      banner.innerText = `⚠️ ĐỦ ĐIỀU KIỆN ĐIỂM (${totalScore.toFixed(2)} PVR) NHƯNG CÓ VĐV MANG TICK XÁM — Cần nộp video AI hoặc Mod duyệt trước khi bốc thăm!`;
+    } else if (diff > 0 && totalScore <= hardLimit) {
+      banner.classList.add('status-warn');
+      banner.innerText = `✅ HỢP LỆ TRONG BIÊN ĐỘ DUNG SAI (+${diff.toFixed(2)} PVR) — Đủ điều kiện thi đấu nội dung ${maxCap.toFixed(2)}!`;
+    } else {
+      banner.classList.add('status-ok');
+      banner.innerText = `✅ HỢP LỆ CHÍNH THỨC — Cặp đôi đủ điều kiện tham gia nội dung ${maxCap.toFixed(2)} PVR!`;
+    }
+  }
+</script>
+</body>
+</html>

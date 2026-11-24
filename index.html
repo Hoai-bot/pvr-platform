@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVR - Pickleball Verified Rating | Hệ Sinh Thái Chấm Trình, Check VAR & Giải Đấu AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      line-height: 1.6;
+      padding: 16px;
+    }
+    a { text-decoration: none; }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 12px 20px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand-logo {
+      font-weight: 800;
+      font-size: 16px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      background: #facc15;
+      color: #000;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+    .nav-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn-nav {
+      border: none;
+      padding: 9px 16px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-nav-ai { background: #facc15; color: #000 !important; }
+    .btn-nav-ai:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(250, 204, 21, 0.4); }
+    .btn-nav-hub { background: linear-gradient(135deg, #0284c7, #10b981); color: #fff !important; }
+    .btn-nav-hub:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); }
+    .btn-lang-toggle {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 25px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-lang-toggle:hover { background: #38bdf8; color: #000; }
+
+    .hero-section {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #172554 100%);
+      border: 2px solid #38bdf8;
+      border-radius: 20px;
+      padding: 36px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+    .hero-title span { color: #facc15; }
+    .hero-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      max-width: 740px;
+      margin: 0 auto 24px auto;
+    }
+    .hero-cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-hero {
+      padding: 14px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-hero-primary { background: linear-gradient(135deg, #facc15, #eab308); color: #000 !important; box-shadow: 0 6px 20px rgba(250, 204, 21, 0.35); }
+    .btn-hero-secondary { background: linear-gradient(135deg, #0284c7, #10b981); color: #fff !important; box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35); }
+    .btn-hero:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    /* UPCOMING TOURNAMENTS SECTION */
+    .upcoming-card-section {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      border: 2px solid #10b981;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .upcoming-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .event-box {
+      background: #1e293b;
+      border: 1px solid #38bdf8;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s;
+    }
+    .event-box:hover { transform: translateY(-3px); border-color: #facc15; }
+    .event-status-pill {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #10b981;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    /* LOOKUP PICK-ID SECTION */
+    .lookup-card {
+      background: #1e293b;
+      border: 1px solid #facc15;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .lookup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .lookup-form { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 14px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .form-input:focus { border-color: #38bdf8; outline: none; }
+    .btn-lookup {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-demo-preview {
+      background: #7c3aed;
+      color: #fff;
+      border: 1px solid #c084fc;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: 800;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .lookup-result {
+      display: none;
+      margin-top: 14px;
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .stat-box {
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .btn-replay-sm {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff !important;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 18px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .feature-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 18px;
+      transition: all 0.25s;
+    }
+    .feature-card:hover { border-color: #38bdf8; transform: translateY(-3px); }
+    .feature-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .feature-card h4 { font-size: 15px; color: #facc15; margin-bottom: 6px; }
+    .feature-card p { font-size: 12px; color: #cbd5e1; line-height: 1.55; }
+
+    .var-showcase-box {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 60%, #1e293b 100%);
+      border: 2px solid #facc15;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(250, 204, 21, 0.12);
+    }
+    .var-badge {
+      display: inline-block;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .var-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .var-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .var-pill strong {
+      display: block;
+      color: #facc15;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .var-pill span {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.45;
+      display: block;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .price-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: all 0.25s;
+    }
+    .price-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+    .price-card.featured {
+      border: 2px solid #facc15;
+      background: linear-gradient(180deg, #1e293b 0%, #172554 100%);
+      box-shadow: 0 10px 25px rgba(250, 204, 21, 0.15);
+    }
+    .popular-ribbon {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #facc15;
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .price-tier { font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 6px; }
+    .price-amount { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .price-amount span { font-size: 12px; font-weight: 600; color: #94a3b8; }
+    .price-comm-tag {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #10b981;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+    .price-features { list-style: none; text-align: left; font-size: 12px; color: #cbd5e1; margin: 12px 0; }
+    .price-features li { margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; }
+    .btn-price {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #0284c7;
+      color: #fff !important;
+      transition: all 0.2s;
+    }
+    .price-card.featured .btn-price { background: #facc15; color: #000 !important; }
+    .pricing-note {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed #38bdf8;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .comp-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+    th { background: #0f172a; color: #38bdf8; font-weight: 800; }
+    .badge-yes { color: #10b981; font-weight: 800; }
+    .badge-no { color: #ef4444; font-weight: 700; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .step-item {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border: 1px solid #38bdf8;
+      border-radius: 14px;
+      padding: 18px;
+      position: relative;
+    }
+    .step-num {
+      background: #38bdf8;
+      color: #000;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .partner-cta {
+      background: linear-gradient(135deg, #0284c7, #10b981);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      color: #fff;
+    }
+    .partner-cta h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .partner-cta p { font-size: 13px; margin-bottom: 16px; opacity: 0.95; }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(6px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+    .modal-box {
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      padding: 18px;
+      width: 100%;
+      max-width: 760px;
+    }
+    .video-frame-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+      margin-top: 10px;
+    }
+    .video-frame-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    #toast-msg {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 800;
+      font-size: 12px;
+      z-index: 999999;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      border: 1px solid #facc15;
+    }
+
+    .pkg-modal-box {
+      background: #1e293b;
+      border: 2px solid #facc15;
+      border-radius: 18px;
+      padding: 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+    .qr-pay-box {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      margin: 12px 0;
+      border: 2px solid #38bdf8;
+    }
+    .qr-pay-box img {
+      max-width: 210px;
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+    .bank-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 5px 0;
+      border-bottom: 1px dashed #334155;
+      color: #cbd5e1;
+    }
+    .bank-info-row strong { color: #facc15; }
+    .pkg-form-group { margin-bottom: 10px; text-align: left; }
+    .pkg-form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .pvr-global-nav {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto 16px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: rgba(30, 41, 59, 0.92);
+      border: 1px solid #334155;
+      padding: 8px 14px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .pvr-nav-pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .pvr-nav-pill:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .pvr-nav-pill.nav-ai { background: #facc15; color: #000 !important; }
+    .pvr-nav-pill.nav-hub { background: linear-gradient(135deg, #0284c7, #10b981); color: #fff !important; }
+    .pvr-nav-pill.nav-events { background: #1e1b4b; color: #c084fc !important; border-color: #a855f7; }
+    .pvr-nav-pill.nav-doubles { background: #064e3b; color: #6ee7b7 !important; border-color: #10b981; }
+    .pvr-nav-pill.nav-athlete { background: #1e293b; color: #facc15 !important; border-color: #facc15; }
+
+  </style>
+</head>
+<body>
+
+  <div id="toast-msg"></div>
+
+  <div class="container">
+    <nav class="pvr-global-nav">
+      <a href="/ai-passport" class="pvr-nav-pill nav-ai">🚀 AI Chấm Trình</a>
+      <a href="/live-hub" class="pvr-nav-pill nav-hub">🏟️ Sân Đấu & VAR</a>
+      <a href="/events" class="pvr-nav-pill nav-events">📅 Sự Kiện & Ảnh Giải</a>
+      <a href="/doubles" class="pvr-nav-pill nav-doubles">🤝 Ghép Cặp Đôi</a>
+      <a href="/athletes" class="pvr-nav-pill nav-athlete">🪪 Hồ Sơ & BXH VĐV</a>
+      <a href="/admin" class="pvr-nav-pill" style="background:#334155; color:#facc15 !important; border-color:#64748b;">🛡️ Quản Trị Mod</a>
+    </nav>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="brand-logo">
+        <i class="fa-solid fa-shield-halved" style="color:#facc15; font-size:20px;"></i>
+        <span>PVR SYSTEM</span>
+        <span class="brand-badge">AI • VAR • PICK-ID</span>
+      </div>
+      <div class="nav-actions">
+        <a href="/ai-passport" class="btn-nav btn-nav-ai" data-vi="🚀 AI Chấm Trình Video" data-en="🚀 AI Rating Audit">
+          🚀 AI Chấm Trình Video
+        </a>
+        <a href="/live-hub" class="btn-nav btn-nav-hub" data-vi="🏆 Cổng Giải Đấu & VAR Hub" data-en="🏆 Tournament & VAR Hub">
+          🏆 Cổng Giải Đấu & VAR Hub
+        </a>
+        <button type="button" class="btn-lang-toggle" id="landingLangBtn" onclick="window.toggleLandingLanguage()">🌐 EN / VI</button>
+      </div>
+    </div>
+
+    <!-- HERO BANNER -->
+    <div class="hero-section">
+      <div class="hero-tag" data-vi="🤖 AI BIOMECHANICS • 🎥 PHÒNG VAR TRỌNG TÀI • 🪪 SHA-256 PICK-ID" data-en="🤖 AI BIOMECHANICS • 🎥 REFEREE VAR ROOM • 🪪 SHA-256 PICK-ID">
+        🤖 AI BIOMECHANICS • 🎥 PHÒNG VAR TRỌNG TÀI • 🪪 SHA-256 PICK-ID
+      </div>
+      <h1 class="hero-title" data-vi="CHUẨN HÓA ĐIỂM TRÌNH <span>PVR</span><br>CHẤM DỨT "TRÌNH BAO", "RỬA ĐIỂM" & TRANH CÃI IN/OUT" data-en="STANDARDIZE <span>PVR</span> RATINGS<br>STOP SANDBAGGING & LINE-CALL DISPUTES">
+        CHUẨN HÓA ĐIỂM TRÌNH <span>PVR</span><br>
+        CHẤM DỨT "TRÌNH BAO", "RỬA ĐIỂM" & TRANH CÃI IN/OUT
+      </h1>
+      <p class="hero-desc" data-vi="<strong>PVR (Pickleball Verified Rating)</strong> tích hợp phân tích động học cơ thể qua Video AI (MediaPipe Pose), thẻ định danh duy nhất <strong>PICK-ID</strong> (mã hóa SHA-256 từ 12 số CCCD theo Nghị định 13/2023/NĐ-CP) cùng <strong>Phòng Check VAR Trọng Tài</strong> tua chậm từng khung hình ngay trên điện thoại." data-en="<strong>PVR (Pickleball Verified Rating)</strong> integrates AI Video Biomechanics (MediaPipe Pose), SHA-256 encrypted <strong>PICK-ID</strong> athlete profiles, and an instant <strong>Referee VAR Room</strong> with frame-by-frame slow motion and virtual laser lines.">
+        <strong>PVR (Pickleball Verified Rating)</strong> tích hợp phân tích động học cơ thể qua Video AI (MediaPipe Pose), thẻ định danh duy nhất <strong>PICK-ID</strong> (mã hóa SHA-256 từ 12 số CCCD theo Nghị định 13/2023/NĐ-CP) cùng <strong>Phòng Check VAR Trọng Tài</strong> tua chậm từng khung hình ngay trên điện thoại.
+      </p>
+      <div class="hero-cta-group">
+        <a href="/ai-passport" class="btn-hero btn-hero-primary" data-vi="🎥 KIỂM ĐỊNH TRÌNH PVR BẰNG VIDEO AI" data-en="🎥 VERIFY PVR RATING VIA AI VIDEO">
+          🎥 KIỂM ĐỊNH TRÌNH PVR BẰNG VIDEO AI
+        </a>
+        <a href="/live-hub" class="btn-hero btn-hero-secondary" data-vi="🏟️ TỔ CHỨC GIẢI ĐẤU & CHECK VAR LIVE" data-en="🏟️ HOST TOURNAMENTS & LIVE VAR">
+          🏟️ TỔ CHỨC GIẢI ĐẤU & CHECK VAR LIVE
+        </a>
+      </div>
+    </div>
+
+    <!-- CÁC GIẢI ĐẤU SẮP DIỄN RA (ĐỒNG BỘ TỰ ĐỘNG TỪ GOOGLE SHEET) -->
+    <div class="upcoming-card-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <span style="color:#10b981; font-weight:800; font-size:15px;" data-vi="📅 CÁC GIẢI ĐẤU SẮP DIỄN RA & ĐANG MỞ ĐĂNG KÝ" data-en="📅 UPCOMING PVR TOURNAMENTS">
+            📅 CÁC GIẢI ĐẤU SẮP DIỄN RA & ĐANG MỞ ĐĂNG KÝ
+          </span>
+          <div style="font-size:11.5px; color:#cbd5e1;" data-vi="Áp dụng xét trình tự động qua thẻ PICK-ID & chống rửa điểm" data-en="Automated PICK-ID skill verification & anti-sandbagging enforced">
+            Áp dụng xét trình tự động qua thẻ PICK-ID & chống rửa điểm
+          </div>
+        </div>
+        <a href="/live-hub" class="btn-nav btn-nav-hub" data-vi="Xem Tất Cả Tại Hub ➔" data-en="View All at Hub ➔">
+          Xem Tất Cả Tại Hub ➔
+        </a>
+      </div>
+
+      <div class="upcoming-grid" id="upcoming-tournaments-grid">
+        <div class="event-box">
+          <div>
+            <span class="event-status-pill">🟢 ĐANG MỞ ĐĂNG KÝ</span>
+            <h4 style="color:#fff; font-size:15px; margin-bottom:6px;">PVR Đà Lạt Open Championship 2026</h4>
+            <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px;">
+              <div>📍 Cụm Sân Trung Tâm Đà Lạt, Lâm Đồng</div>
+              <div>⏰ Chủ Nhật, 30/11/2026 • Đôi Nam Nữ 4.8 & Đôi Nam 5.3</div>
+              <div>🛡️ Giới hạn trình: Dung sai tối đa +0.10 PVR</div>
+            </div>
+          </div>
+          <a href="/live-hub" class="btn-price" style="text-align:center;">
+            📝 ĐĂNG KÝ THAM GIA ➔
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRA CỨU CĂN CƯỚC PICK-ID TRỰC TIẾP -->
+    <div class="lookup-card">
+      <div class="lookup-header">
+        <span style="color:#facc15; font-weight:800; font-size:14px;" data-vi="🪪 TRA CỨU HỒ SƠ THẺ PICK-ID, ĐIỂM PVR & VIDEO TRẬN ĐẤU" data-en="🪪 ATHLETE PICK-ID LOOKUP, PVR HISTORY & MATCH REPLAYS">
+          🪪 TRA CỨU HỒ SƠ THẺ PICK-ID, ĐIỂM PVR & VIDEO TRẬN ĐẤU
+        </span>
+        <button type="button" class="btn-demo-preview" onclick="window.showDemoLandingProfile()" data-vi="👁️ Xem Thẻ Mẫu Minh Họa" data-en="👁️ View Sample Card">
+          👁️ Xem Thẻ Mẫu Minh Họa
+        </button>
+      </div>
+      <div class="lookup-form">
+        <input type="text" id="landing-cccd-input" class="form-input" placeholder="Nhập PICK-ID, 12 số CCCD hoặc SĐT VĐV (VD: 079200008901)..." onkeypress="if(event.key==='Enter') window.checkPickIdLanding()">
+        <button type="button" id="btn-landing-check" class="btn-lookup" onclick="window.checkPickIdLanding()" data-vi="🔍 TRA CỨU NGAY" data-en="🔍 SEARCH NOW">
+          🔍 TRA CỨU NGAY
+        </button>
+      </div>
+
+      <div id="landing-lookup-result" class="lookup-result">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:8px; flex-wrap:wrap; gap:6px;">
+          <div>
+            <span id="ld-pickid" style="background:#facc15; color:#000; font-weight:800; font-size:11px; padding:2px 8px; border-radius:10px;">PICK-8901-452</span>
+            <strong id="ld-name" style="color:#fff; font-size:15px; margin-left:8px;">---</strong>
+          </div>
+          <span id="ld-flag" style="font-size:11px; font-weight:800; color:#10b981;">✅ CLEAN</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div style="font-size:10px; color:#94a3b8;" data-vi="ĐIỂM PVR HIỆN TẠI" data-en="CURRENT PVR">ĐIỂM PVR HIỆN TẠI</div>
+            <div id="ld-cur-pvr" style="font-size:18px; font-weight:800; color:#10b981;">3.10 PVR</div>
+          </div>
+          <div class="stat-box">
+            <div style="font-size:10px; color:#94a3b8;" data-vi="KHÓA SÀN / PEAK PVR" data-en="FLOOR LOCK / PEAK PVR">KHÓA SÀN / PEAK PVR</div>
+            <div id="ld-peak-pvr" style="font-size:18px; font-weight:800; color:#facc15;">3.15 PVR</div>
+          </div>
+          <div class="stat-box">
+            <div style="font-size:10px; color:#94a3b8;" data-vi="LỊCH SỬ THI ĐẤU" data-en="MATCH RECORD">LỊCH SỬ THI ĐẤU</div>
+            <div id="ld-matches" style="font-size:15px; font-weight:800; color:#38bdf8;">0W / 0 Trận</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #334155; overflow-x:auto;">
+          <div style="font-size:11px; font-weight:800; color:#38bdf8; margin-bottom:6px;" data-vi="🎬 LỊCH SỬ TRẬN ĐẤU & VIDEO PHÁT LẠI:" data-en="🎬 MATCH HISTORY & VIDEO REPLAYS:">
+            🎬 LỊCH SỬ TRẬN ĐẤU & VIDEO PHÁT LẠI:
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th data-vi="Giải Đấu" data-en="Tournament">Giải Đấu</th>
+                <th data-vi="Nội Dung" data-en="Division">Nội Dung</th>
+                <th data-vi="Đối Thủ" data-en="Opponent">Đối Thủ</th>
+                <th data-vi="Kết Quả" data-en="Result">Kết Quả</th>
+                <th>Video Replay</th>
+              </tr>
+            </thead>
+            <tbody id="ld-match-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÍNH NĂNG: PHÒNG CHECK VAR TRỌNG TÀI TẠI SÂN -->
+    <div class="var-showcase-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <span class="var-badge" data-vi="🆕 CÔNG NGHỆ VAR CHUẨN CHUYÊN NGHIỆP CHO MỌI QUY MÔ GIẢI ĐẤU" data-en="🆕 PRO-GRADE MULTI-CAM VAR TECH FOR ALL TOURNAMENTS">🆕 CÔNG NGHỆ VAR CHUẨN CHUYÊN NGHIỆP CHO MỌI QUY MÔ GIẢI ĐẤU</span>
+          <h3 style="color:#fff; font-size:19px; font-weight:800;" data-vi="🎥 PHÒNG CHECK VAR TRỌNG TÀI — SOI BÓNG IN/OUT & LỖI CHÂN VÀO BẾP" data-en="🎥 REFEREE VAR ROOM — IN/OUT BALL & KITCHEN FOOT-FAULT REVIEW">
+            🎥 PHÒNG CHECK VAR TRỌNG TÀI — SOI BÓNG IN/OUT & LỖI CHÂN VÀO BẾP
+          </h3>
+        </div>
+        <a href="/live-hub" class="btn-nav btn-nav-ai" data-vi="⚡ Trải Nghiệm Phòng VAR ➔" data-en="⚡ Try VAR Room ➔">
+          ⚡ Trải Nghiệm Phòng VAR ➔
+        </a>
+      </div>
+      <p style="font-size:12.5px; color:#cbd5e1; margin-top:8px;" data-vi="Hỗ trợ đa góc camera (Livestream, USB Capture Card góc sân, clip điện thoại) và xử lý trực tiếp ngay tại sân — từ giải CLB đến giải Open & chuyên nghiệp quy mô lớn:" data-en="Supports multi-cam angles (Livestream, court-corner USB Capture Card, mobile clips) and runs directly on court — built for club, open, and pro tournaments:">
+        Hỗ trợ đa góc camera (Livestream, USB Capture Card góc sân, clip điện thoại) và xử lý trực tiếp ngay tại sân — từ giải CLB đến giải Open & chuyên nghiệp quy mô lớn:
+      </p>
+      <div class="var-grid">
+        <div class="var-pill">
+          <strong data-vi="⏱️ Tua Siêu Chậm & Từng Frame" data-en="⏱️ Super Slow-Mo & Frame Step">⏱️ Tua Siêu Chậm & Từng Frame</strong>
+          <span data-vi="Chế độ tua chậm 0.1x, 0.25x, 0.5x kết hợp nút nhảy từng khung hình (-1 / +1 Frame) bắt trọn khoảnh khắc bóng chạm vạch." data-en="0.1x, 0.25x, 0.5x slow motion plus -1 / +1 frame stepping to catch exact ball bounce moments.">
+            Chế độ tua chậm 0.1x, 0.25x, 0.5x kết hợp nút nhảy từng khung hình (-1 / +1 Frame) bắt trọn khoảnh khắc bóng chạm vạch.
+          </span>
+        </div>
+        <div class="var-pill">
+          <strong data-vi="🔍 Kính Lúp Zoom 4.0x & Thước Laser" data-en="🔍 4.0x Magnifier & Laser Line">🔍 Kính Lúp Zoom 4.0x & Thước Laser</strong>
+          <span data-vi="Phóng đại tới 4.0x, kéo thả điểm nhìn và bật vạch laser đỏ căn thẳng mép vạch biên / vạch Kitchen để phân định chính xác." data-en="Zoom up to 4.0x, pan freely, and overlay a virtual red laser line aligned with baseline or Kitchen line.">
+            Phóng đại tới 4.0x, kéo thả điểm nhìn và bật vạch laser đỏ căn thẳng mép vạch biên / vạch Kitchen để phân định chính xác.
+          </span>
+        </div>
+        <div class="var-pill">
+          <strong data-vi="⚖️ Chốt Phán Quyết & Cộng Điểm Tức Thì" data-en="⚖️ Instant Decision & Score Sync">⚖️ Chốt Phán Quyết & Cộng Điểm Tức Thì</strong>
+          <span data-vi="Hỗ trợ cả camera quay trực tiếp góc sân lẫn video từ điện thoại VĐV; bấm chốt VAR tự động cộng điểm lên bảng tỷ số." data-en="Supports live court-corner cameras or player phone clips; confirming VAR decision updates the live scoreboard automatically.">
+            Hỗ trợ cả camera quay trực tiếp góc sân lẫn video từ điện thoại VĐV; bấm chốt VAR tự động cộng điểm lên bảng tỷ số.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 TRỤ CỘT CÔNG NGHỆ PVR -->
+    <h2 class="section-title" data-vi="🛡️ 4 LỚP BẢO VỆ ĐỘC QUYỀN CỦA HỆ THỐNG PVR" data-en="🛡️ 4 EXCLUSIVE PROTECTION LAYERS OF PVR">
+      🛡️ 4 LỚP BẢO VỆ ĐỘC QUYỀN CỦA HỆ THỐNG PVR
+    </h2>
+    <p class="section-sub" data-vi="Khắc phục triệt để những lỗ hổng gây mất công bằng ở mọi giải đấu từ CLB đến chuyên nghiệp" data-en="Eliminating rating manipulation and unfair matchups across all club, open, and pro tournaments">
+      Khắc phục triệt để những lỗ hổng gây mất công bằng ở mọi giải đấu từ CLB đến chuyên nghiệp
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(56, 189, 248, 0.15); color:#38bdf8;">
+          <i class="fa-solid fa-id-card-clip"></i>
+        </div>
+        <h4 data-vi="1. Thẻ PICK-ID Mã Hóa SHA-256" data-en="1. SHA-256 Encrypted PICK-ID">1. Thẻ PICK-ID Mã Hóa SHA-256</h4>
+        <p data-vi="Mỗi VĐV được cấp mã thẻ PICK-ID duy nhất từ 12 số CCCD, bảo mật SHA-256 chuẩn Nghị định 13/2023/NĐ-CP, chặn đứng tình trạng tạo nick ảo." data-en="Unique PICK-ID generated from 12-digit Citizen ID with one-way SHA-256 encryption, preventing duplicate accounts.">
+          Mỗi VĐV được cấp mã thẻ PICK-ID duy nhất từ 12 số CCCD, bảo mật SHA-256 chuẩn Nghị định 13/2023/NĐ-CP, chặn đứng tình trạng tạo nick ảo.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(250, 204, 21, 0.15); color:#facc15;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h4 data-vi="2. Khóa Sàn Chống "Rửa Điểm"" data-en="2. Anti-Sandbagging Floor Lock">2. Khóa Sàn Chống "Rửa Điểm"</h4>
+        <p data-vi="AI phân tích góc vung vợt, độ chùng gối (Biomechanics) để thiết lập mức sàn cứng (Peak PVR - 0.15). Cố tình đánh thua cũng không thể hạ hạng." data-en="AI Biomechanics sets a hard floor (Peak PVR - 0.15) so intentional losses cannot drop a player into lower divisions.">
+          AI phân tích góc vung vợt, độ chùng gối (Biomechanics) để thiết lập mức sàn cứng (Peak PVR - 0.15). Cố tình đánh thua cũng không thể hạ hạng.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(16, 185, 129, 0.15); color:#10b981;">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+        <h4 data-vi="3. Chống "Trình Bao" Điểm Ảo" data-en="3. Carried-Pair Elo Dampener">3. Chống "Trình Bao" Điểm Ảo</h4>
+        <p data-vi="Khi VĐV trình thấp ghép cặp với đồng đội quá mạnh (lệch ≥ 0.50), thuật toán chỉ cộng tối đa 20% điểm Elo để ngăn thổi phồng trình độ sau giải." data-en="When a lower-rated player teams up with a much stronger partner (gap ≥ 0.50), Elo gain is capped at 20% to prevent rating inflation.">
+          Khi VĐV trình thấp ghép cặp với đồng đội quá mạnh (lệch ≥ 0.50), thuật toán chỉ cộng tối đa 20% điểm Elo để ngăn thổi phồng trình độ sau giải.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168, 85, 247, 0.15); color:#a855f7;">
+          <i class="fa-solid fa-sitemap"></i>
+        </div>
+        <h4 data-vi="4. Live Sync Đa Sân, VAR & Replay" data-en="4. Multi-Court Live Sync, VAR & Replay">4. Live Sync Đa Sân, VAR & Replay</h4>
+        <p data-vi="Trọng tài bấm điểm & Check VAR trực tiếp trên điện thoại, AI tách nhánh Sáng/Chiều, tự gắn mốc video phát lại và in sơ đồ PDF A4." data-en="Referee live scoring & VAR review on mobile, automated morning/afternoon seeding, timestamped match replays, and A4 PDF export.">
+          Trọng tài bấm điểm & Check VAR trực tiếp trên điện thoại, AI tách nhánh Sáng/Chiều, tự gắn mốc video phát lại và in sơ đồ PDF A4.
+        </p>
+      </div>
+    </div>
+
+    <!-- BẢNG GIÁ GÓI MỞ GIẢI MỚI -->
+    <h2 class="section-title" data-vi="💎 BẢNG GIÁ GÓI VẬN HÀNH GIẢI ĐẤU CHUẨN PVR" data-en="💎 PVR TOURNAMENT HOSTING PACKAGES">
+      💎 BẢNG GIÁ GÓI VẬN HÀNH GIẢI ĐẤU CHUẨN PVR
+    </h2>
+    <p class="section-sub" data-vi="Tích hợp trọn bộ AI Chấm Trình + Phòng Check VAR Trọng Tài + Cổng thu lệ phí VietQR tự động" data-en="All-in-one AI Video Rating + Referee VAR Room + Automated VietQR Fee Collection">
+      Tích hợp trọn bộ AI Chấm Trình + Phòng Check VAR Trọng Tài + Cổng thu lệ phí VietQR tự động
+    </p>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div>
+          <div class="price-tier" data-vi="🥉 GÓI GIẢI LẺ CLUB" data-en="🥉 CLUB SINGLE EVENT">🥉 GÓI GIẢI LẺ CLUB</div>
+          <div class="price-amount">199.000đ <span data-vi="/ giải" data-en="/ event">/ giải</span></div>
+          <div class="price-comm-tag" data-vi="+ 6% phí nền tảng" data-en="+ 6% platform fee">+ 6% phí nền tảng</div>
+          <ul class="price-features">
+            <li>✅ <span data-vi="Vận hành tối đa <strong>4 sân</strong> song song" data-en="Operate up to <strong>4 courts</strong> simultaneously">Vận hành tối đa <strong>4 sân</strong> song song</span></li>
+            <li>✅ <span data-vi="Mở full <strong>Phòng Check VAR Trọng Tài</strong>" data-en="Full <strong>Referee VAR Room</strong> unlocked">Mở full <strong>Phòng Check VAR Trọng Tài</strong></span></li>
+            <li>✅ <span data-vi="Tặng kèm <strong>30 lượt</strong> chấm AI Video" data-en="Includes <strong>30 AI Video</strong> audits">Tặng kèm <strong>30 lượt</strong> chấm AI Video</span></li>
+            <li>✅ <span data-vi="AI chia nhánh & in sơ đồ PDF A4" data-en="AI seeding & A4 PDF brackets">AI chia nhánh & in sơ đồ PDF A4</span></li>
+          </ul>
+        </div>
+        <button type="button" style="border:none; cursor:pointer;" class="btn-price" onclick="window.openPackageCheckout('CLUB_SINGLE', 'Gói Giải Lẻ Club', 'Club Single Event', 199000, 30)" data-vi="CHỌN GÓI GIẢI LẺ ➔" data-en="SELECT CLUB SINGLE ➔">CHỌN GÓI GIẢI LẺ ➔</button>
+      </div>
+
+      <div class="price-card">
+        <div>
+          <div class="price-tier" data-vi="🥈 GÓI MỞ RỘNG PRO" data-en="🥈 OPEN PRO EVENT">🥈 GÓI MỞ RỘNG PRO</div>
+          <div class="price-amount">399.000đ <span data-vi="/ giải" data-en="/ event">/ giải</span></div>
+          <div class="price-comm-tag" data-vi="+ 6% phí nền tảng" data-en="+ 6% platform fee">+ 6% phí nền tảng</div>
+          <ul class="price-features">
+            <li>✅ <span data-vi="Không giới hạn sân (lên tới <strong>50 sân</strong>)" data-en="Unlimited courts (up to <strong>50 courts</strong>)">Không giới hạn sân (lên tới <strong>50 sân</strong>)</span></li>
+            <li>✅ <span data-vi="Full <strong>VAR Trọng Tài</strong> & Live đa sân" data-en="Full <strong>Referee VAR</strong> & Multi-court Live">Full <strong>VAR Trọng Tài</strong> & Live đa sân</span></li>
+            <li>✅ <span data-vi="Tặng kèm <strong>100 lượt</strong> chấm AI Video" data-en="Includes <strong>100 AI Video</strong> audits">Tặng kèm <strong>100 lượt</strong> chấm AI Video</span></li>
+            <li>✅ <span data-vi="Tự động lưu Video Replay từng trận" data-en="Auto timestamped match replays">Tự động lưu Video Replay từng trận</span></li>
+          </ul>
+        </div>
+        <button type="button" style="border:none; cursor:pointer;" class="btn-price" onclick="window.openPackageCheckout('OPEN_PRO', 'Gói Mở Rộng Pro', 'Open Pro Event', 399000, 100)" data-vi="CHỌN MỞ RỘNG PRO ➔" data-en="SELECT OPEN PRO ➔">CHỌN MỞ RỘNG PRO ➔</button>
+      </div>
+
+      <div class="price-card featured">
+        <div class="popular-ribbon" data-vi="⭐ TỐI ƯU NHẤT CHO CỤM SÂN" data-en="⭐ BEST FOR CLUBS">⭐ TỐI ƯU NHẤT CHO CỤM SÂN</div>
+        <div>
+          <div class="price-tier" style="color:#facc15;" data-vi="🥇 CỤM SÂN / CLB THÁNG" data-en="🥇 CLUB MONTHLY PRO">🥇 CỤM SÂN / CLB THÁNG</div>
+          <div class="price-amount">699.000đ <span data-vi="/ tháng" data-en="/ month">/ tháng</span></div>
+          <div class="price-comm-tag" style="border-color:#facc15; color:#facc15;" data-vi="Ưu đãi chỉ 5% phí nền tảng" data-en="Discounted 5% platform fee">Ưu đãi chỉ 5% phí nền tảng</div>
+          <ul class="price-features">
+            <li>✅ <span data-vi="Tổ chức giải <strong>không giới hạn</strong> 30 ngày" data-en="<strong>Unlimited</strong> tournaments for 30 days">Tổ chức giải <strong>không giới hạn</strong> 30 ngày</span></li>
+            <li>✅ <span data-vi="Full <strong>VAR</strong> + Đồng bộ tỷ số đa thiết bị" data-en="Full <strong>VAR</strong> + Multi-device live sync">Full <strong>VAR</strong> + Đồng bộ tỷ số đa thiết bị</span></li>
+            <li>✅ <span data-vi="Tặng kèm <strong>250 lượt</strong> chấm AI / tháng" data-en="Includes <strong>250 AI audits</strong> / month">Tặng kèm <strong>250 lượt</strong> chấm AI / tháng</span></li>
+            <li>✅ <span data-vi="Tích hợp Google Sheet & Zalo riêng" data-en="Custom Google Sheet & Zalo sync">Tích hợp Google Sheet & Zalo riêng</span></li>
+          </ul>
+        </div>
+        <button type="button" style="border:none; cursor:pointer;" class="btn-price" onclick="window.openPackageCheckout('CLUB_MONTH', 'Cụm Sân / CLB Tháng', 'Club Monthly Pro', 699000, 250)" data-vi="ĐĂNG KÝ GÓI THÁNG ➔" data-en="GET CLUB MONTHLY ➔">ĐĂNG KÝ GÓI THÁNG ➔</button>
+      </div>
+
+      <div class="price-card">
+        <div>
+          <div class="price-tier" style="color:#10b981;" data-vi="👑 CHUỖI GIẢI NĂM VIP" data-en="👑 ANNUAL SERIES VIP">👑 CHUỖI GIẢI NĂM VIP</div>
+          <div class="price-amount">4.990.000đ <span data-vi="/ năm" data-en="/ year">/ năm</span></div>
+          <div class="price-comm-tag" data-vi="Ưu đãi chỉ 4% phí nền tảng" data-en="VIP 4% platform fee">Ưu đãi chỉ 4% phí nền tảng</div>
+          <ul class="price-features">
+            <li>✅ <span data-vi="Tiết kiệm <strong>40,5%</strong> (3.398.000đ/năm)" data-en="Save <strong>40.5%</strong> vs monthly billing">Tiết kiệm <strong>40,5%</strong> (3.398.000đ/năm)</span></li>
+            <li>✅ <span data-vi="Tặng kèm <strong>3.000 lượt</strong> chấm AI / năm" data-en="Includes <strong>3,000 AI audits</strong> / year">Tặng kèm <strong>3.000 lượt</strong> chấm AI / năm</span></li>
+            <li>✅ <span data-vi="Full <strong>VAR</strong>, Livestream & Thương hiệu riêng" data-en="Full <strong>VAR</strong>, Live & White-label branding">Full <strong>VAR</strong>, Livestream & Thương hiệu riêng</span></li>
+            <li>✅ <span data-vi="Hỗ trợ kỹ thuật ưu tiên 24/7" data-en="24/7 priority technical support">Hỗ trợ kỹ thuật ưu tiên 24/7</span></li>
+          </ul>
+        </div>
+        <button type="button" style="border:none; cursor:pointer;" class="btn-price" onclick="window.openPackageCheckout('ANNUAL_VIP', 'Chuỗi Giải Năm VIP', 'Annual Series VIP', 4990000, 3000)" data-vi="ĐĂNG KÝ GÓI VIP ➔" data-en="SELECT ANNUAL VIP ➔">ĐĂNG KÝ GÓI VIP ➔</button>
+      </div>
+    </div>
+
+    <div class="pricing-note" data-vi="💡 <strong>Chính sách minh bạch cho BTC:</strong> Tự động đối soát VietQR (94%–96% về trực tiếp tài khoản BTC). Trần phí nền tảng tối đa <strong>3.000.000đ/giải</strong> đối với các giải đấu quy mô lớn. Vượt định mức AI tặng kèm chỉ tính thêm <strong>5.000đ/lượt</strong>." data-en="💡 <strong>Transparent Organizer Policy:</strong> Instant VietQR split (94%–96% directly to Organizer). Platform fee capped at <strong>3,000,000 VND/event</strong> for large tournaments. Extra AI video audits beyond quota are only <strong>5,000 VND/audit</strong>.">
+      💡 <strong>Chính sách minh bạch cho BTC:</strong> Tự động đối soát VietQR (94%–96% về trực tiếp tài khoản BTC). Trần phí nền tảng tối đa <strong>3.000.000đ/giải</strong> đối với các giải đấu quy mô lớn. Vượt định mức AI tặng kèm chỉ tính thêm <strong>5.000đ/lượt</strong>.
+    </div>
+
+    <!-- BẢNG SO SÁNH -->
+    <div class="comp-box">
+      <h3 style="color:#facc15; font-size:16px; margin-bottom:12px; text-align:center;" data-vi="⚖️ SO SÁNH HỆ THỐNG PVR VỚI CÁC NỀN TẢNG CHẤM TRÌNH CŨ" data-en="⚖️ PVR SYSTEM VS. LEGACY MANUAL RATING PLATFORMS">
+        ⚖️ SO SÁNH HỆ THỐNG PVR VỚI CÁC NỀN TẢNG CHẤM TRÌNH CŨ
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th data-vi="Tiêu Chí Đánh Giá" data-en="Evaluation Criteria">Tiêu Chí Đánh Giá</th>
+            <th data-vi="Hệ Thống Cũ (Chấm Tay / Tự Khai)" data-en="Legacy Systems (Manual / Self-Rated)">Hệ Thống Cũ (Chấm Tay / Tự Khai)</th>
+            <th style="color:#facc15;" data-vi="Hệ Thống PVR (AI + VAR Verified)" data-en="PVR System (AI + VAR Verified)">Hệ Thống PVR (AI + VAR Verified)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong data-vi="Định danh & Bảo mật" data-en="Identity & Privacy">Định danh & Bảo mật</strong></td>
+            <td class="badge-no" data-vi="✕ Dễ dùng SIM phụ tạo nhiều nick để né trình" data-en="✕ Easy to create fake accounts with extra SIMs">✕ Dễ dùng SIM phụ tạo nhiều nick để né trình</td>
+            <td class="badge-yes" data-vi="✅ Thẻ PICK-ID mã hóa SHA-256 từ 12 số CCCD" data-en="✅ SHA-256 PICK-ID bound to 12-digit Citizen ID">✅ Thẻ PICK-ID mã hóa SHA-256 từ 12 số CCCD</td>
+          </tr>
+          <tr>
+            <td><strong data-vi="Chấm trình thực lực" data-en="Skill Assessment">Chấm trình thực lực</strong></td>
+            <td class="badge-no" data-vi="✕ Cảm tính, phụ thuộc người chấm" data-en="✕ Subjective, biased manual reviews">✕ Cảm tính, phụ thuộc người chấm</td>
+            <td class="badge-yes" data-vi="✅ Phân tích Video AI Biomechanics + Chữ ký số QR" data-en="✅ AI Video Biomechanics + QR Digital Seal">✅ Phân tích Video AI Biomechanics + Chữ ký số QR</td>
+          </tr>
+          <tr>
+            <td><strong data-vi="Công nghệ VAR Trọng Tài" data-en="On-Court Referee VAR">Công nghệ VAR Trọng Tài</strong></td>
+            <td class="badge-no" data-vi="✕ Tranh cãi bóng In/Out, lỗi bếp bằng mắt thường" data-en="✕ Heated line-call & kitchen-fault arguments">✕ Tranh cãi bóng In/Out, lỗi bếp bằng mắt thường</td>
+            <td class="badge-yes" data-vi="✅ Phòng VAR tua chậm 0.1x, Zoom 4x & Thước Laser" data-en="✅ 0.1x Slow-Mo VAR, 4x Zoom & Laser Line">✅ Phòng VAR tua chậm 0.1x, Zoom 4x & Thước Laser</td>
+          </tr>
+          <tr>
+            <td><strong data-vi="Xử lý "Rửa điểm" (Thả thua)" data-en="Anti-Sandbagging">Xử lý "Rửa điểm" (Thả thua)</strong></td>
+            <td class="badge-no" data-vi="✕ Thua vài trận là tụt hạng xuống đánh giải thấp" data-en="✕ Intentional losses drop rating to lower tiers">✕ Thua vài trận là tụt hạng xuống đánh giải thấp</td>
+            <td class="badge-yes" data-vi="✅ Khóa sàn Peak PVR & Elo bất đối xứng" data-en="✅ Hard Peak PVR floor lock & asymmetric Elo">✅ Khóa sàn Peak PVR & Elo bất đối xứng</td>
+          </tr>
+          <tr>
+            <td><strong data-vi="Xử lý "Trình bao" (Ké đồng đội)" data-en="Anti-Carried Pair">Xử lý "Trình bao" (Ké đồng đội)</strong></td>
+            <td class="badge-no" data-vi="✕ VĐV yếu ăn theo đồng đội mạnh bị lên điểm ảo" data-en="✕ Weak player gets inflated points from pro partner">✕ VĐV yếu ăn theo đồng đội mạnh bị lên điểm ảo</td>
+            <td class="badge-yes" data-vi="✅ Giảm trọng số cộng điểm khi lệch trình cặp đấu" data-en="✅ 20% Elo cap when partner rating gap ≥ 0.50">✅ Giảm trọng số cộng điểm khi lệch trình cặp đấu</td>
+          </tr>
+          <tr>
+            <td><strong data-vi="Vận hành & Video Replay" data-en="Live Ops & Replay">Vận hành & Video Replay</strong></td>
+            <td class="badge-no" data-vi="✕ Xếp tay thủ công, không lưu video từng trận" data-en="✕ Manual brackets, no per-match video archive">✕ Xếp tay thủ công, không lưu video từng trận</td>
+            <td class="badge-yes" data-vi="✅ Live Sync đa sân, chốt tỷ số & lưu mốc Video" data-en="✅ Multi-court Live Sync & timestamped replays">✅ Live Sync đa sân, chốt tỷ số & lưu mốc Video</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QUY TRÌNH 3 BƯỚC -->
+    <h2 class="section-title" data-vi="⚡ QUY TRÌNH THAM GIA HỆ SINH THÁI PVR" data-en="⚡ 3-STEP PVR ECOSYSTEM WORKFLOW">
+      ⚡ QUY TRÌNH THAM GIA HỆ SINH THÁI PVR
+    </h2>
+    <p class="section-sub" data-vi="Đơn giản, minh bạch cho cả Vận Động Viên và Ban Tổ Chức" data-en="Seamless, transparent workflow for both Athletes and Organizers">
+      Đơn giản, minh bạch cho cả Vận Động Viên và Ban Tổ Chức
+    </p>
+
+    <div class="steps-grid">
+      <div class="step-item">
+        <span class="step-num" data-vi="BƯỚC 1 • ĐỊNH DANH" data-en="STEP 1 • IDENTITY">BƯỚC 1 • ĐỊNH DANH</span>
+        <h4 style="color:#fff; font-size:14px; margin-bottom:6px;" data-vi="Cấp Thẻ Căn Cước PICK-ID" data-en="Issue SHA-256 PICK-ID">Cấp Thẻ Căn Cước PICK-ID</h4>
+        <p style="font-size:12px; color:#cbd5e1;" data-vi="Tải video thi đấu lên AI Platform hoặc đăng ký giải đầu tiên bằng 12 số CCCD để nhận mã thẻ PICK-ID và chỉ số PVR chuẩn." data-en="Upload test video to AI Platform or register with your 12-digit Citizen ID to receive your verified PICK-ID and PVR rating.">
+          Tải video thi đấu lên AI Platform hoặc đăng ký giải đầu tiên bằng 12 số CCCD để nhận mã thẻ PICK-ID và chỉ số PVR chuẩn.
+        </p>
+      </div>
+
+      <div class="step-item">
+        <span class="step-num" data-vi="BƯỚC 2 • THI ĐẤU & VAR" data-en="STEP 2 • COMPETE & VAR">BƯỚC 2 • THI ĐẤU & VAR</span>
+        <h4 style="color:#fff; font-size:14px; margin-bottom:6px;" data-vi="AI Chia Nhánh, Live Sync & Check VAR" data-en="AI Seeding, Live Sync & VAR">AI Chia Nhánh, Live Sync & Check VAR</h4>
+        <p style="font-size:12px; color:#cbd5e1;" data-vi="Hệ thống tự động tách trình Sáng/Chiều, phát trực tiếp từng sân, đồng bộ tỷ số trọng tài và hỗ trợ Check VAR soi vạch ngay trên điện thoại." data-en="Automated morning/afternoon seeding, multi-court live streaming, real-time scoring, and instant mobile VAR line-call review.">
+          Hệ thống tự động tách trình Sáng/Chiều, phát trực tiếp từng sân, đồng bộ tỷ số trọng tài và hỗ trợ Check VAR soi vạch ngay trên điện thoại.
+        </p>
+      </div>
+
+      <div class="step-item">
+        <span class="step-num" data-vi="BƯỚC 3 • TÍCH LŨY" data-en="STEP 3 • ARCHIVE">BƯỚC 3 • TÍCH LŨY</span>
+        <h4 style="color:#fff; font-size:14px; margin-bottom:6px;" data-vi="Lưu Lịch Sử & Xem Lại Video" data-en="Match History & Video Replay">Lưu Lịch Sử & Xem Lại Video</h4>
+        <p style="font-size:12px; color:#cbd5e1;" data-vi="Mọi trận đấu được ghi vào sổ cái PVR kèm mốc thời gian video phát lại, tự động cập nhật điểm thực chất cho các giải tiếp theo." data-en="Every match is logged in the PVR ledger with timestamped replay links, dynamically updating verified ratings for future tournaments.">
+          Mọi trận đấu được ghi vào sổ cái PVR kèm mốc thời gian video phát lại, tự động cập nhật điểm thực chất cho các giải tiếp theo.
+        </p>
+      </div>
+    </div>
+
+    <!-- PARTNER CTA -->
+    <div class="partner-cta">
+      <h3 data-vi="🏟️ BẠN LÀ CHỦ CỤM SÂN HOẶC BAN TỔ CHỨC GIẢI ĐẤU?" data-en="🏟️ ARE YOU A CLUB OWNER OR TOURNAMENT ORGANIZER?">
+        🏟️ BẠN LÀ CHỦ CỤM SÂN HOẶC BAN TỔ CHỨC GIẢI ĐẤU?
+      </h3>
+      <p data-vi="Khởi tạo giải đấu chuẩn PVR chỉ trong 3 phút. Hỗ trợ chia nhánh tự động, bảng tỷ số Livestream đa sân, Phòng Check VAR trọng tài, in sơ đồ PDF A4 và chống gian lận trình điểm." data-en="Launch a PVR-verified tournament in 3 minutes. Includes automated brackets, multi-court live scoreboards, Referee VAR Room, A4 PDF printing, and anti-sandbagging protection.">
+        Khởi tạo giải đấu chuẩn PVR chỉ trong 3 phút. Hỗ trợ chia nhánh tự động, bảng tỷ số Livestream đa sân, Phòng Check VAR trọng tài, in sơ đồ PDF A4 và chống gian lận trình điểm.
+      </p>
+      <a href="/live-hub" class="btn-hero btn-hero-primary" data-vi="🚀 MỞ GIẢI ĐẤU NGAY TẠI PVR HUB" data-en="🚀 LAUNCH TOURNAMENT AT PVR HUB">
+        🚀 MỞ GIẢI ĐẤU NGAY TẠI PVR HUB
+      </a>
+    </div>
+  </div>
+
+  <!-- MODAL ĐĂNG KÝ & THANH TOÁN GÓI MỞ GIẢI VIETQR + TELEGRAM -->
+  <div class="modal-overlay" id="package-checkout-modal">
+    <div class="pkg-modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:10px; margin-bottom:12px;">
+        <div>
+          <span style="background:#facc15; color:#000; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px;">VIETQR AUTO-SYNC</span>
+          <h4 id="pkg-modal-title" style="color:#fff; font-size:16px; margin-top:4px;">ĐĂNG KÝ GÓI MỞ GIẢI</h4>
+        </div>
+        <button type="button" style="background:#ef4444; color:#fff; border:none; padding:5px 11px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="window.closePackageCheckout()">✕</button>
+      </div>
+
+      <div id="pkg-checkout-form-area">
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:10px 12px; margin-bottom:12px;">
+          <div class="bank-info-row"><span data-vi="Gói dịch vụ:" data-en="Package:">Gói dịch vụ:</span><strong id="pkg-summary-name">Gói Giải Lẻ Club</strong></div>
+          <div class="bank-info-row"><span data-vi="Số tiền thanh toán:" data-en="Amount:">Số tiền thanh toán:</span><strong id="pkg-summary-price" style="font-size:15px; color:#10b981;">199.000đ</strong></div>
+          <div class="bank-info-row"><span data-vi="Ngân hàng thụ hưởng:" data-en="Bank:">Ngân hàng thụ hưởng:</span><strong id="pkg-bank-name">---</strong></div>
+          <div class="bank-info-row"><span data-vi="Số tài khoản:" data-en="Account No:">Số tài khoản:</span><strong id="pkg-bank-acc">---</strong></div>
+          <div class="bank-info-row"><span data-vi="Chủ tài khoản:" data-en="Account Holder:">Chủ tài khoản:</span><strong id="pkg-bank-owner">---</strong></div>
+          <div class="bank-info-row" style="border-bottom:none;"><span data-vi="Nội dung CK:" data-en="Transfer Note:">Nội dung CK:</span><strong id="pkg-transfer-memo" style="color:#38bdf8;">PVR CLUB</strong></div>
+        </div>
+
+        <div class="qr-pay-box">
+          <img id="pkg-vietqr-img" src="" alt="Mã VietQR Thanh Toán">
+          <div style="color:#0f172a; font-size:11px; font-weight:800; margin-top:6px;" data-vi="Quét mã bằng App Ngân hàng bất kỳ để chuyển khoản nhanh" data-en="Scan with any Banking App for instant transfer">
+            Quét mã bằng App Ngân hàng bất kỳ để chuyển khoản nhanh
+          </div>
+        </div>
+
+        <div class="pkg-form-group">
+          <label data-vi="Tên CLB / Cụm Sân / Ban Tổ Chức *" data-en="Club / Organizer Name *">Tên CLB / Cụm Sân / Ban Tổ Chức *</label>
+          <input type="text" id="pkg-org-name" class="form-input" style="width:100%;" placeholder="VD: CLB Pickleball Đà Lạt..." oninput="window.refreshPackageVietQR()">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="pkg-form-group">
+            <label data-vi="Số điện thoại / Zalo *" data-en="Phone / Zalo *">Số điện thoại / Zalo *</label>
+            <input type="tel" id="pkg-org-phone" class="form-input" style="width:100%;" placeholder="090xxxxxxx" oninput="window.refreshPackageVietQR()">
+          </div>
+          <div class="pkg-form-group">
+            <label data-vi="Email nhận mã Access Code" data-en="Email for Access Code">Email nhận mã Access Code</label>
+            <input type="email" id="pkg-org-email" class="form-input" style="width:100%;" placeholder="btc@gmail.com">
+          </div>
+        </div>
+
+        <button type="button" id="btn-submit-pkg-order" class="btn-hero btn-hero-primary" style="width:100%; justify-content:center; margin-top:6px;" onclick="window.submitPackageOrderToTelegram()" data-vi="✅ TÔI ĐÃ CHUYỂN KHOẢN & GỬI YÊU CẦU MỞ GÓI" data-en="✅ I HAVE TRANSFERRED & SUBMIT REQUEST">
+          ✅ TÔI ĐÃ CHUYỂN KHOẢN & GỬI YÊU CẦU MỞ GÓI
+        </button>
+        <div style="font-size:11px; color:#94a3b8; text-align:center; margin-top:8px;" data-vi="Hệ thống tự động báo Telegram Admin và kích hoạt mã giải đấu ngay sau khi nhận thanh toán." data-en="System notifies Admin Telegram immediately and activates your tournament code upon payment.">
+          Hệ thống tự động báo Telegram Admin và kích hoạt mã giải đấu ngay sau khi nhận thanh toán.
+        </div>
+      </div>
+
+      <!-- KHUNG HIỂN THỊ MÃ GIẢI & MẬT KHẨU SAU KHI TẠO THÀNH CÔNG -->
+      <div id="pkg-issued-credentials-box" style="display:none; background:#0f172a; border:2px solid #10b981; border-radius:14px; padding:16px; text-align:left;">
+        <div style="color:#10b981; font-weight:800; font-size:15px; margin-bottom:8px;">
+          ✅ KHỞI TẠO TÀI KHOẢN TỔ CHỨC GIẢI THÀNH CÔNG!
+        </div>
+        <p style="font-size:12px; color:#cbd5e1; margin-bottom:12px;">
+          Hệ thống đã lưu dữ liệu và gửi thông báo về Telegram. Vui lòng lưu lại thông tin dưới đây để đăng nhập <strong>Trang 2 (AI Passport)</strong> và <strong>Trang 3 (Live Hub)</strong>:
+        </p>
+        <div style="background:#1e293b; border:1px dashed #facc15; border-radius:10px; padding:12px; font-size:13px; line-height:1.9; margin-bottom:14px;">
+          <div>🔑 <strong>Mã Giải (Partner ID):</strong> <span id="issued-partner-id" style="color:#facc15; font-weight:800; user-select:all;">---</span></div>
+          <div>🔒 <strong>Mật Khẩu BTC (Trang 3):</strong> <span id="issued-partner-pass" style="color:#38bdf8; font-weight:800; user-select:all;">---</span></div>
+          <div>⚡ <strong>Hạn mức chấm AI:</strong> <span id="issued-ai-quota" style="color:#10b981; font-weight:700;">100 lượt</span></div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a href="/live-hub" class="btn-hero btn-hero-secondary" style="flex:1; justify-content:center; padding:11px; font-size:12px;">
+            🏟️ Vào Trang 3 Điều Hành Giải ➔
+          </a>
+          <button type="button" class="btn-hero" style="background:#334155; color:#fff; padding:11px 16px; font-size:12px;" onclick="window.closePackageCheckout()">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL XEM LẠI VIDEO REPLAY -->
+  <div class="modal-overlay" id="landing-replay-modal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:8px;">
+        <h4 id="ld-replay-title" style="color:#facc15; font-size:14px;">🎬 XEM LẠI VIDEO TRẬN ĐẤU</h4>
+        <button type="button" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="window.closeLandingReplay()">✕ Close</button>
+      </div>
+      <div class="video-frame-wrap">
+        <iframe id="ld-replay-iframe" src="" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const GOOGLE_SCRIPT_BACKEND = 'https://script.google.com/macros/s/AKfycbzd5fvXcY61jf1MmcTY1r-9xZOCJs58hBGV66K8ghGG-ZH7_kTuU18AxV2oHL1HWWe7LA/exec';
+  let currentLandingLang = 'vi';
+
+  function showToast(msg, isError = false) {
+    const el = document.getElementById('toast-msg');
+    el.innerText = msg;
+    el.style.background = isError ? '#ef4444' : '#10b981';
+    el.style.display = 'block';
+    clearTimeout(window._tTimer);
+    window._tTimer = setTimeout(() => { el.style.display = 'none'; }, 3800);
+  }
+
+  window.toggleLandingLanguage = function() {
+    currentLandingLang = currentLandingLang === 'vi' ? 'en' : 'vi';
+    document.getElementById('landingLangBtn').innerText = currentLandingLang === 'vi' ? '🌐 EN / VI' : '🌐 VI / EN';
+
+    document.querySelectorAll('[data-vi]').forEach(el => {
+      const txt = el.getAttribute(`data-${currentLandingLang}`);
+      if (txt) el.innerHTML = txt;
+    });
+
+    const inputEl = document.getElementById('landing-cccd-input');
+    if (inputEl) {
+      inputEl.placeholder = currentLandingLang === 'vi'
+        ? 'Nhập PICK-ID, 12 số CCCD hoặc SĐT VĐV (VD: 079200008901)...'
+        : 'Enter PICK-ID, 12-digit Citizen ID or Phone (e.g., 079200008901)...';
+    }
+  };
+
+  function toEmbedUrl(rawUrl) {
+    if (!rawUrl) return '';
+    const url = rawUrl.trim();
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      let startSec = '';
+      const tMatch = url.match(/[?&](?:t|start)=(\d+)/);
+      if (tMatch && tMatch[1]) startSec = `&start=${tMatch[1]}`;
+      if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split(/[?&]/)[0];
+      else if (url.includes('/live/')) videoId = url.split('/live/')[1].split(/[?&]/)[0];
+      else if (url.includes('v=')) videoId = url.split('v=')[1].split('&')[0];
+      if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0${startSec}`;
+    }
+    if (url.includes('facebook.com') || url.includes('fb.watch')) {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&autoplay=true`;
+    }
+    return url;
+  }
+
+  window.openLandingReplay = function(videoUrl, title) {
+    document.getElementById('ld-replay-title').innerText = `🎬 REPLAY: ${title}`;
+    document.getElementById('ld-replay-iframe').src = toEmbedUrl(videoUrl);
+    document.getElementById('landing-replay-modal').style.display = 'flex';
+  };
+
+  window.closeLandingReplay = function() {
+    document.getElementById('ld-replay-iframe').src = '';
+    document.getElementById('landing-replay-modal').style.display = 'none';
+  };
+
+  window.showDemoLandingProfile = function() {
+    document.getElementById('ld-pickid').innerText = 'PICK-8901-452';
+    document.getElementById('ld-name').innerText = 'Nguyễn Minh Khôi (CCCD: 0792****8901) [DEMO]';
+    document.getElementById('ld-cur-pvr').innerText = '3.25 PVR';
+    document.getElementById('ld-peak-pvr').innerText = '3.30 PVR';
+    document.getElementById('ld-matches').innerText = '14W / 18 (78%)';
+    document.getElementById('ld-flag').innerText = '✅ CLEAN (Floor: 3.15 PVR)';
+    document.getElementById('ld-flag').style.color = '#10b981';
+
+    const sampleYt = 'https://www.youtube.com/watch?v=9No-FiEInLA';
+    document.getElementById('ld-match-rows').innerHTML = `
+      <tr>
+        <td>PVR Đà Lạt Open 2026</td>
+        <td style="color:#38bdf8;">Đôi Nam 6.2</td>
+        <td>Trần Hùng / Lê Nam</td>
+        <td style="color:#10b981; font-weight:bold;">11 - 7 (Win)</td>
+        <td><button type="button" class="btn-replay-sm" onclick="window.openLandingReplay('${sampleYt}', 'Nguyễn Khôi vs Trần Hùng (11-7)')">▶️ Replay</button></td>
+      </tr>
+      <tr>
+        <td>PVR Đà Lạt Open 2026</td>
+        <td style="color:#38bdf8;">Đôi Nam 6.2</td>
+        <td>Phạm Tuấn / Vũ Bảo</td>
+        <td style="color:#10b981; font-weight:bold;">11 - 9 (Win)</td>
+        <td><button type="button" class="btn-replay-sm" onclick="window.openLandingReplay('${sampleYt}', 'Nguyễn Khôi vs Phạm Tuấn (11-9)')">▶️ Replay</button></td>
+      </tr>
+    `;
+
+    document.getElementById('landing-lookup-result').style.display = 'block';
+    showToast(currentLandingLang === 'vi'
+      ? '👁️ Đang hiển thị Thẻ Căn Cước PICK-8901-452 & Video Replay Mẫu!'
+      : '👁️ Displaying Sample PICK-8901-452 Profile & Video Replay!');
+  };
+
+  window.checkPickIdLanding = function() {
+    const rawQuery = document.getElementById('landing-cccd-input').value.trim();
+    if (!rawQuery) {
+      showToast(currentLandingLang === 'vi'
+        ? '⚠️ Vui lòng nhập PICK-ID, 12 số CCCD hoặc SĐT hợp lệ!'
+        : '⚠️ Please enter a valid PICK-ID, 12-digit Citizen ID or Phone!', true);
+      return;
+    }
+
+    const btn = document.getElementById('btn-landing-check');
+    btn.innerText = '⏳ ...';
+    btn.disabled = true;
+
+    fetch(`${GOOGLE_SCRIPT_BACKEND}?action=getAthleteProfile&q=${encodeURIComponent(rawQuery)}`)
+      .then(r => r.json())
+      .then(data => {
+        btn.innerText = currentLandingLang === 'vi' ? '🔍 TRA CỨU NGAY' : '🔍 SEARCH NOW';
+        btn.disabled = false;
+
+        if (!data || !data.success || !data.exists) {
+          document.getElementById('landing-lookup-result').style.display = 'none';
+          showToast(currentLandingLang === 'vi'
+            ? `ℹ️ Chưa có hồ sơ PICK-ID cho mã ${rawQuery}. Bấm "👁️ Xem Thẻ Mẫu Minh Họa" để xem thử!`
+            : `ℹ️ No PICK-ID record found for ${rawQuery}. Click "👁️ View Sample Card" for demo!`, true);
+          return;
+        }
+
+        document.getElementById('ld-pickid').innerText = data.pickId || 'PICK-ID';
+        document.getElementById('ld-name').innerText = `${data.registeredName || 'VĐV PVR'} (${data.phone || ''})`;
+        document.getElementById('ld-cur-pvr').innerText = (parseFloat(data.currentPvr) || 3.0).toFixed(2) + ' PVR';
+        document.getElementById('ld-peak-pvr').innerText = (parseFloat(data.peakPvr) || 3.0).toFixed(2) + ' PVR';
+
+        const totalM = parseInt(data.matchesPlayed) || 0;
+        const winM = parseInt(data.wins) || 0;
+        const pct = totalM > 0 ? Math.round((winM / totalM) * 100) : 0;
+        document.getElementById('ld-matches').innerText = `${winM}W / ${totalM} (${pct}%)`;
+
+        const flagEl = document.getElementById('ld-flag');
+        const flagStr = String(data.flagStatus || 'CLEAN');
+        flagEl.innerText = flagStr === 'CLEAN' ? '✅ CLEAN' : flagStr;
+        flagEl.style.color = flagStr === 'CLEAN' ? '#10b981' : '#facc15';
+
+        const matches = data.recentMatches || [];
+        const rowsEl = document.getElementById('ld-match-rows');
+        if (matches.length === 0) {
+          rowsEl.innerHTML = '<tr><td colspan="5" style="color:#94a3b8;">Chưa có trận đấu ghi nhận video replay.</td></tr>';
+        } else {
+          let html = '';
+          matches.forEach(m => {
+            const safeUrl = (m.videoUrl || '').replace(/'/g, "\\'");
+            const safeTitle = `${data.registeredName} vs ${m.opponent}`.replace(/'/g, "\\'");
+            const btnVideo = m.videoUrl
+              ? `<button type="button" class="btn-replay-sm" onclick="window.openLandingReplay('${safeUrl}', '${safeTitle}')">▶️ Replay</button>`
+              : '<span style="color:#64748b;">---</span>';
+            html += `<tr>
+              <td>${m.tournament}</td>
+              <td style="color:#38bdf8;">${m.category}</td>
+              <td>${m.opponent}</td>
+              <td style="color:${m.won ? '#10b981' : '#94a3b8'}; font-weight:bold;">${m.score}</td>
+              <td>${btnVideo}</td>
+            </tr>`;
+          });
+          rowsEl.innerHTML = html;
+        }
+
+        document.getElementById('landing-lookup-result').style.display = 'block';
+        showToast(`🪪 ${data.pickId} - ${data.registeredName}`);
+      })
+      .catch(() => {
+        btn.innerText = currentLandingLang === 'vi' ? '🔍 TRA CỨU NGAY' : '🔍 SEARCH NOW';
+        btn.disabled = false;
+        showToast('❌ Lỗi kết nối máy chủ tra cứu!', true);
+      });
+  };
+
+  const COMPANY_BANK_CONFIG = {
+    bankId: 'ICB',
+    bankDisplayName: 'VietinBank (CN Lâm Đồng - PGD Phan Đình Phùng)',
+    accountNo: '114002975689',
+    accountName: 'CTY TNHH IC DUONG VAO TUONG LAI CUA BAN',
+    template: 'compact2'
+  };
+
+  // Telegram alerts are relayed securely via Google Apps Script V9_6 backend
+
+  let currentSelectedPkg = {
+    code: 'CLUB_SINGLE',
+    nameVi: 'Gói Giải Lẻ Club',
+    nameEn: 'Club Single Event',
+    amount: 199000,
+    aiQuota: 30
+  };
+
+  window.openPackageCheckout = function(pkgCode, nameVi, nameEn, amount, aiQuota) {
+    currentSelectedPkg = { code: pkgCode, nameVi, nameEn, amount, aiQuota };
+    document.getElementById('pkg-modal-title').innerText = currentLandingLang === 'vi'
+      ? `ĐĂNG KÝ: ${nameVi.toUpperCase()}`
+      : `SUBSCRIBE: ${nameEn.toUpperCase()}`;
+    document.getElementById('pkg-summary-name').innerText = currentLandingLang === 'vi' ? nameVi : nameEn;
+    document.getElementById('pkg-summary-price').innerText = amount.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('pkg-bank-name').innerText = COMPANY_BANK_CONFIG.bankDisplayName;
+    document.getElementById('pkg-bank-acc').innerText = COMPANY_BANK_CONFIG.accountNo;
+    document.getElementById('pkg-bank-owner').innerText = COMPANY_BANK_CONFIG.accountName;
+
+    // Reset giao diện về form nhập liệu mỗi khi mở Pop-up mới
+    document.getElementById('pkg-checkout-form-area').style.display = 'block';
+    document.getElementById('pkg-issued-credentials-box').style.display = 'none';
+
+    window.refreshPackageVietQR();
+    document.getElementById('package-checkout-modal').style.display = 'flex';
+  };
+
+  window.closePackageCheckout = function() {
+    document.getElementById('package-checkout-modal').style.display = 'none';
+  };
+
+  window.refreshPackageVietQR = function() {
+    const rawPhone = (document.getElementById('pkg-org-phone').value || '').replace(/[^0-9]/g, '');
+    const suffix = rawPhone ? rawPhone.slice(-6) : Math.floor(1000 + Math.random() * 9000);
+    const memo = `PVR ${currentSelectedPkg.code} ${suffix}`;
+    document.getElementById('pkg-transfer-memo').innerText = memo;
+
+    const qrUrl = `https://img.vietqr.io/image/${COMPANY_BANK_CONFIG.bankId}-${COMPANY_BANK_CONFIG.accountNo}-${COMPANY_BANK_CONFIG.template}.png?amount=${currentSelectedPkg.amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(COMPANY_BANK_CONFIG.accountName)}`;
+    document.getElementById('pkg-vietqr-img').src = qrUrl;
+  };
+
+  let lastOrderSubmitTime = 0;
+  window.submitPackageOrderToTelegram = async function() {
+    const now = Date.now();
+    if (now - lastOrderSubmitTime < 30000) {
+      const remain = Math.ceil((30000 - (now - lastOrderSubmitTime)) / 1000);
+      showToast(`🛡️ Hệ thống bảo vệ chống spam: Vui lòng đợi ${remain} giây trước khi gửi lại!`, true);
+      return;
+    }
+
+    const orgName = document.getElementById('pkg-org-name').value.trim();
+    const orgPhone = document.getElementById('pkg-org-phone').value.trim();
+    const orgEmail = document.getElementById('pkg-org-email').value.trim();
+    const memo = document.getElementById('pkg-transfer-memo').innerText;
+
+    if (!orgName || !orgPhone || orgPhone.replace(/[^0-9]/g, '').length < 9) {
+      showToast(currentLandingLang === 'vi'
+        ? '⚠️ Vui lòng nhập Tên CLB/BTC và Số điện thoại Zalo hợp lệ!'
+        : '⚠️ Please enter Club/Organizer Name and valid Phone number!', true);
+      return;
+    }
+
+    lastOrderSubmitTime = now;
+    const btn = document.getElementById('btn-submit-pkg-order');
+    btn.disabled = true;
+    btn.innerText = currentLandingLang === 'vi' ? '⏳ Đang tạo mã giải & lưu dữ liệu...' : '⏳ Generating access code...';
+
+    const orderPayload = {
+      action: 'registerPackageOrder',
+      packageCode: currentSelectedPkg.code,
+      packageName: currentSelectedPkg.nameVi,
+      amount: currentSelectedPkg.amount,
+      aiQuota: currentSelectedPkg.aiQuota,
+      organizerName: orgName,
+      phone: orgPhone,
+      email: orgEmail,
+      transferMemo: memo,
+      bankAccount: `${COMPANY_BANK_CONFIG.bankId} - ${COMPANY_BANK_CONFIG.accountNo}`
+    };
+
+    // 1. Gọi Google Apps Script trước để lưu Sheet & lấy Partner ID + Password tự sinh
+    let issuedPartnerId = '';
+    let issuedPassword = '';
+    try {
+      const gasRes = await fetch(GOOGLE_SCRIPT_BACKEND, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(orderPayload)
+      });
+      const gasData = await gasRes.json();
+      if (gasData && gasData.partnerId) {
+        issuedPartnerId = gasData.partnerId;
+        issuedPassword = gasData.password || '';
+      }
+    } catch (e) {
+      console.warn('Apps Script order sync:', e);
+    }
+
+    // Dự phòng sinh mã ngay trên trình duyệt nếu Apps Script chưa kịp trả về
+    if (!issuedPartnerId) {
+      const cleanPrefix = orgName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6) || 'CLUB';
+      const digits = orgPhone.replace(/[^0-9]/g, '');
+      const suffix4 = digits.length >= 4 ? digits.slice(-4) : String(Math.floor(1000 + Math.random() * 9000));
+      issuedPartnerId = `PVR_${cleanPrefix}_${suffix4}`;
+      issuedPassword = `Pass_${Math.floor(100000 + Math.random() * 900000)}`;
+    }
+
+    // 2. Chuyển tiếp thông báo kèm Mã Giải & Mật Khẩu BTC qua Backend Apps Script (Bảo mật Token)
+    const teleText = [
+      `🚨 *ĐƠN ĐĂNG KÝ GÓI MỞ GIẢI PVR MỚI (VERCEL)*`,
+      `📦 *Gói:* ${currentSelectedPkg.nameVi} (${currentSelectedPkg.amount.toLocaleString('vi-VN')}đ)`,
+      `🤖 *Hạn mức AI:* ${currentSelectedPkg.aiQuota} lượt`,
+      `🏟️ *Đơn vị / BTC:* ${orgName}`,
+      `📞 *SĐT / Zalo:* ${orgPhone}`,
+      orgEmail ? `📧 *Email:* ${orgEmail}` : '',
+      `💳 *Nội dung CK:* \`${memo}\``,
+      `🏦 *TK Nhận:* ${COMPANY_BANK_CONFIG.bankId} - ${COMPANY_BANK_CONFIG.accountNo}`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `🔑 *MÃ GIẢI (Partner ID):* \`${issuedPartnerId}\``,
+      `🔒 *MẬT KHẨU BTC (Live Hub):* \`${issuedPassword}\``
+    ].filter(Boolean).join('\n');
+
+    fetch(GOOGLE_SCRIPT_BACKEND, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'relayTelegramAdminAlert',
+        message: teleText
+      })
+    }).catch(err => console.warn('Telegram relay warning:', err));
+
+    btn.disabled = false;
+
+        if (!data || !data.success || !data.exists) {
+          document.getElementById('landing-lookup-result').style.display = 'none';
+          showToast(currentLandingLang === 'vi'
+            ? `ℹ️ Chưa có hồ sơ PICK-ID cho mã ${rawQuery}. Bấm "👁️ Xem Thẻ Mẫu Minh Họa" để xem thử!`
+            : `ℹ️ No PICK-ID record found for ${rawQuery}. Click "👁️ View Sample Card" for demo!`, true);
+          return;
+        }
+
+        document.getElementById('ld-pickid').innerText = data.pickId || 'PICK-ID';
+        document.getElementById('ld-name').innerText = `${data.registeredName || 'VĐV PVR'} (${data.phone || ''})`;
+        document.getElementById('ld-cur-pvr').innerText = (parseFloat(data.currentPvr) || 3.0).toFixed(2) + ' PVR';
+        document.getElementById('ld-peak-pvr').innerText = (parseFloat(data.peakPvr) || 3.0).toFixed(2) + ' PVR';
+
+        const totalM = parseInt(data.matchesPlayed) || 0;
+        const winM = parseInt(data.wins) || 0;
+        const pct = totalM > 0 ? Math.round((winM / totalM) * 100) : 0;
+        document.getElementById('ld-matches').innerText = `${winM}W / ${totalM} (${pct}%)`;
+
+        const flagEl = document.getElementById('ld-flag');
+        const flagStr = String(data.flagStatus || 'CLEAN');
+        flagEl.innerText = flagStr === 'CLEAN' ? '✅ CLEAN' : flagStr;
+        flagEl.style.color = flagStr === 'CLEAN' ? '#10b981' : '#facc15';
+
+        const matches = data.recentMatches || [];
+        const rowsEl = document.getElementById('ld-match-rows');
+        if (matches.length === 0) {
+          rowsEl.innerHTML = '<tr><td colspan="5" style="color:#94a3b8;">Chưa có trận đấu ghi nhận video replay.</td></tr>';
+        } else {
+          let html = '';
+          matches.forEach(m => {
+            const safeUrl = (m.videoUrl || '').replace(/'/g, "\\'");
+            const safeTitle = `${data.registeredName} vs ${m.opponent}`.replace(/'/g, "\\'");
+            const btnVideo = m.videoUrl
+              ? `<button type="button" class="btn-replay-sm" onclick="window.openLandingReplay('${safeUrl}', '${safeTitle}')">▶️ Replay</button>`
+              : '<span style="color:#64748b;">---</span>';
+            html += `<tr>
+              <td>${m.tournament}</td>
+              <td style="color:#38bdf8;">${m.category}</td>
+              <td>${m.opponent}</td>
+              <td style="color:${m.won ? '#10b981' : '#94a3b8'}; font-weight:bold;">${m.score}</td>
+              <td>${btnVideo}</td>
+            </tr>`;
+          });
+          rowsEl.innerHTML = html;
+        }
+
+        document.getElementById('landing-lookup-result').style.display = 'block';
+        showToast(`🪪 ${data.pickId} - ${data.registeredName}`);
+      })
+      .catch(() => {
+        btn.innerText = currentLandingLang === 'vi' ? '🔍 TRA CỨU NGAY' : '🔍 SEARCH NOW';
+        btn.disabled = false;
+        showToast('❌ Lỗi kết nối máy chủ tra cứu!', true);
+      });
+  };
+
+  const COMPANY_BANK_CONFIG = {
+    bankId: 'ICB',
+    bankDisplayName: 'VietinBank (CN Lâm Đồng - PGD Phan Đình Phùng)',
+    accountNo: '114002975689',
+    accountName: 'CTY TNHH IC DUONG VAO TUONG LAI CUA BAN',
+    template: 'compact2'
+  };
+
+  // Telegram alerts are relayed securely via Google Apps Script V9_6 backend
+
+  let currentSelectedPkg = {
+    code: 'CLUB_SINGLE',
+    nameVi: 'Gói Giải Lẻ Club',
+    nameEn: 'Club Single Event',
+    amount: 199000,
+    aiQuota: 30
+  };
+
+  window.openPackageCheckout = function(pkgCode, nameVi, nameEn, amount, aiQuota) {
+    currentSelectedPkg = { code: pkgCode, nameVi, nameEn, amount, aiQuota };
+    document.getElementById('pkg-modal-title').innerText = currentLandingLang === 'vi'
+      ? `ĐĂNG KÝ: ${nameVi.toUpperCase()}`
+      : `SUBSCRIBE: ${nameEn.toUpperCase()}`;
+    document.getElementById('pkg-summary-name').innerText = currentLandingLang === 'vi' ? nameVi : nameEn;
+    document.getElementById('pkg-summary-price').innerText = amount.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('pkg-bank-name').innerText = COMPANY_BANK_CONFIG.bankDisplayName;
+    document.getElementById('pkg-bank-acc').innerText = COMPANY_BANK_CONFIG.accountNo;
+    document.getElementById('pkg-bank-owner').innerText = COMPANY_BANK_CONFIG.accountName;
+
+    // Reset giao diện về form nhập liệu mỗi khi mở Pop-up mới
+    document.getElementById('pkg-checkout-form-area').style.display = 'block';
+    document.getElementById('pkg-issued-credentials-box').style.display = 'none';
+
+    window.refreshPackageVietQR();
+    document.getElementById('package-checkout-modal').style.display = 'flex';
+  };
+
+  window.closePackageCheckout = function() {
+    document.getElementById('package-checkout-modal').style.display = 'none';
+  };
+
+  window.refreshPackageVietQR = function() {
+    const rawPhone = (document.getElementById('pkg-org-phone').value || '').replace(/[^0-9]/g, '');
+    const suffix = rawPhone ? rawPhone.slice(-6) : Math.floor(1000 + Math.random() * 9000);
+    const memo = `PVR ${currentSelectedPkg.code} ${suffix}`;
+    document.getElementById('pkg-transfer-memo').innerText = memo;
+
+    const qrUrl = `https://img.vietqr.io/image/${COMPANY_BANK_CONFIG.bankId}-${COMPANY_BANK_CONFIG.accountNo}-${COMPANY_BANK_CONFIG.template}.png?amount=${currentSelectedPkg.amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(COMPANY_BANK_CONFIG.accountName)}`;
+    document.getElementById('pkg-vietqr-img').src = qrUrl;
+  };
+
+  let lastOrderSubmitTime = 0;
+  window.submitPackageOrderToTelegram = async function() {
+    const now = Date.now();
+    if (now - lastOrderSubmitTime < 30000) {
+      const remain = Math.ceil((30000 - (now - lastOrderSubmitTime)) / 1000);
+      showToast(`🛡️ Hệ thống bảo vệ chống spam: Vui lòng đợi ${remain} giây trước khi gửi lại!`, true);
+      return;
+    }
+
+    const orgName = document.getElementById('pkg-org-name').value.trim();
+    const orgPhone = document.getElementById('pkg-org-phone').value.trim();
+    const orgEmail = document.getElementById('pkg-org-email').value.trim();
+    const memo = document.getElementById('pkg-transfer-memo').innerText;
+
+    if (!orgName || !orgPhone || orgPhone.replace(/[^0-9]/g, '').length < 9) {
+      showToast(currentLandingLang === 'vi'
+        ? '⚠️ Vui lòng nhập Tên CLB/BTC và Số điện thoại Zalo hợp lệ!'
+        : '⚠️ Please enter Club/Organizer Name and valid Phone number!', true);
+      return;
+    }
+
+    lastOrderSubmitTime = now;
+    const btn = document.getElementById('btn-submit-pkg-order');
+    btn.disabled = true;
+    btn.innerText = currentLandingLang === 'vi' ? '⏳ Đang tạo mã giải & lưu dữ liệu...' : '⏳ Generating access code...';
+
+    const orderPayload = {
+      action: 'registerPackageOrder',
+      packageCode: currentSelectedPkg.code,
+      packageName: currentSelectedPkg.nameVi,
+      amount: currentSelectedPkg.amount,
+      aiQuota: currentSelectedPkg.aiQuota,
+      organizerName: orgName,
+      phone: orgPhone,
+      email: orgEmail,
+      transferMemo: memo,
+      bankAccount: `${COMPANY_BANK_CONFIG.bankId} - ${COMPANY_BANK_CONFIG.accountNo}`
+    };
+
+    // 1. Gọi Google Apps Script trước để lưu Sheet & lấy Partner ID + Password tự sinh
+    let issuedPartnerId = '';
+    let issuedPassword = '';
+    try {
+      const gasRes = await fetch(GOOGLE_SCRIPT_BACKEND, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(orderPayload)
+      });
+      const gasData = await gasRes.json();
+      if (gasData && gasData.partnerId) {
+        issuedPartnerId = gasData.partnerId;
+        issuedPassword = gasData.password || '';
+      }
+    } catch (e) {
+      console.warn('Apps Script order sync:', e);
+    }
+
+    // Dự phòng sinh mã ngay trên trình duyệt nếu Apps Script chưa kịp trả về
+    if (!issuedPartnerId) {
+      const cleanPrefix = orgName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6) || 'CLUB';
+      const digits = orgPhone.replace(/[^0-9]/g, '');
+      const suffix4 = digits.length >= 4 ? digits.slice(-4) : String(Math.floor(1000 + Math.random() * 9000));
+      issuedPartnerId = `PVR_${cleanPrefix}_${suffix4}`;
+      issuedPassword = `Pass_${Math.floor(100000 + Math.random() * 900000)}`;
+    }
+
+    // 2. Gửi thông báo kèm Mã Giải & Mật Khẩu BTC qua Telegram
+    if (TELEGRAM_NOTIFY_CONFIG.botToken && TELEGRAM_NOTIFY_CONFIG.chatId) {
+      const teleText = [
+        `🚨 *ĐƠN ĐĂNG KÝ GÓI MỞ GIẢI PVR MỚI*`,
+        `📦 *Gói:* ${currentSelectedPkg.nameVi} (${currentSelectedPkg.amount.toLocaleString('vi-VN')}đ)`,
+        `🤖 *Hạn mức AI:* ${currentSelectedPkg.aiQuota} lượt`,
+        `🏟️ *Đơn vị / BTC:* ${orgName}`,
+        `📞 *SĐT / Zalo:* ${orgPhone}`,
+        orgEmail ? `📧 *Email:* ${orgEmail}` : '',
+        `💳 *Nội dung CK:* \`${memo}\``,
+        `🏦 *TK Nhận:* ${COMPANY_BANK_CONFIG.bankId} - ${COMPANY_BANK_CONFIG.accountNo}`,
+        `━━━━━━━━━━━━━━━━━━━━`,
+        `🔑 *MÃ GIẢI (Partner ID):* \`${issuedPartnerId}\``,
+        `🔒 *MẬT KHẨU BTC (Trang 3):* \`${issuedPassword}\``
+      ].filter(Boolean).join('\n');
+
+      fetch(`https://api.telegram.org/bot${TELEGRAM_NOTIFY_CONFIG.botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_NOTIFY_CONFIG.chatId,
+          text: teleText,
+          parse_mode: 'Markdown'
+        })
+      }).catch(err => console.warn('Telegram direct notify warning:', err));
+    }
+
+    btn.disabled = false;
+    btn.innerText = currentLandingLang === 'vi'
+      ? '✅ TÔI ĐÃ CHUYỂN KHOẢN & GỬI YÊU CẦU MỞ GÓI'
+      : '✅ I HAVE TRANSFERRED & SUBMIT REQUEST';
+
+    // 3. Hiển thị ngay Mã Giải & Mật Khẩu trên Pop-up để khách copy dùng ngay
+    document.getElementById('issued-partner-id').innerText = issuedPartnerId;
+    document.getElementById('issued-partner-pass').innerText = issuedPassword;
+    document.getElementById('issued-ai-quota').innerText = `${currentSelectedPkg.aiQuota} lượt`;
+    document.getElementById('pkg-checkout-form-area').style.display = 'none';
+    document.getElementById('pkg-issued-credentials-box').style.display = 'block';
+
+    showToast(currentLandingLang === 'vi'
+      ? `🎉 Đã cấp mã ${issuedPartnerId} & gửi về Telegram!`
+      : `🎉 Issued code ${issuedPartnerId} & sent to Telegram!`);
+  };
+
+  // Tự động tải danh sách các giải đấu sắp diễn ra từ Google Sheet
+  (async function syncUpcomingTournamentsToLanding() {
+    const grid = document.getElementById('upcoming-tournaments-grid');
+    if (!grid) return;
+    try {
+      const res = await fetch(`${GOOGLE_SCRIPT_BACKEND}?action=getPublicTournaments`);
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
+        grid.innerHTML = data.tournaments.map(t => `
+          <div class="event-box">
+            <div>
+              <span class="event-status-pill">🟢 ĐANG MỞ ĐĂNG KÝ</span>
+              <h4 style="color:#fff; font-size:15px; margin-bottom:6px;">${t.tournamentName}</h4>
+              <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px;">
+                <div>🏟️ Quy mô: <strong>${t.courtCount || 4} Sân</strong> • Mã giải: <strong>${t.partnerId}</strong></div>
+                <div>⏰ ${t.scheduleSummary || 'Mở đăng ký trực tuyến trên PVR Live Hub'}</div>
+                <div>💳 Lệ phí: <strong>${parseInt(t.feeAmount || 100000).toLocaleString('vi-VN')}đ</strong> • Khóa sàn PICK-ID</div>
+              </div>
+            </div>
+            <a href="/live-hub" class="btn-price" style="text-align:center;">
+              📝 ĐĂNG KÝ THAM GIA ➔
+            </a>
+          </div>
+        `).join('');
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>

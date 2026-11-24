@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVR Admin & Mod Command • Cổng Điều Hành Nội Bộ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-gold: #facc15;
+      --accent-red: #ef4444;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: var(--bg-main);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container { width: 100%; max-width: 1020px; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .title { font-size: 18px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 8px; }
+    .rbac-tag {
+      background: var(--accent-gold);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* KHUNG ĐĂNG NHẬP DUY NHẤT */
+    .login-gate-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 0;
+    }
+    .login-box {
+      background: #141b2d;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 32px 26px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .gate-pill {
+      display: inline-block;
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .login-box h2 { margin: 0 0 6px 0; font-size: 22px; color: #fff; }
+    .login-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+    .login-field { text-align: left; margin-bottom: 14px; }
+    .login-field label { display: block; font-size: 11.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; }
+    .form-control {
+      width: 100%;
+      padding: 11px 13px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--accent-gold); }
+    .btn-login-submit {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #facc15, #eab308);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .btn-login-submit:active { transform: scale(0.98); }
+    .login-error {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      font-size: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    /* KHÔNG GIAN ĐIỀU HÀNH SAU KHI ĐĂNG NHẬP */
+    .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 16px;
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--accent-blue); color: #000; border-color: var(--accent-blue); }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .role-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .mod-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 180px;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 720px) { .mod-controls { grid-template-columns: 1fr; } }
+
+    .tick-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .pill-gold { background: rgba(250, 204, 21, 0.2); border: 1px solid #facc15; color: #facc15; }
+    .pill-blue { background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; }
+    .pill-grey { background: rgba(148, 163, 184, 0.2); border: 1px solid #94a3b8; color: #cbd5e1; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #334155; text-align: left; }
+    th { color: var(--accent-blue); font-size: 11px; text-transform: uppercase; }
+    .btn-act {
+      border: none;
+      padding: 7px 11px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    .btn-act:active { transform: scale(0.95); }
+    .btn-verify { background: #facc15; color: #000; }
+    .btn-blue-tick { background: #0284c7; color: #fff; border: 1px solid #38bdf8; }
+    .btn-up { background: #f59e0b; color: #000; }
+    .btn-retake { background: #475569; color: #fff; border: 1px solid #94a3b8; }
+    .alert-box {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #0f172a;
+      border: 1px solid var(--accent-gold);
+    }
+    .session-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav style="width:100%; margin:0 auto 16px auto; display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(30,41,59,0.92); border:1px solid #334155; padding:8px 12px; border-radius:30px; box-shadow:0 4px 15px rgba(0,0,0,0.25);">
+      <a href="/" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#0f172a; color:#38bdf8; border:1px solid #38bdf8;">🏠 Trang Chủ</a>
+      <a href="/ai-passport" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#facc15; color:#000;">🚀 AI Chấm Trình</a>
+      <a href="/live-hub" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:linear-gradient(135deg,#0284c7,#10b981); color:#fff;">🏟️ Sân Đấu & VAR</a>
+      <a href="/events" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#1e1b4b; color:#c084fc; border:1px solid #a855f7;">📅 Sự Kiện & Ảnh Giải</a>
+      <a href="/doubles" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#064e3b; color:#6ee7b7; border:1px solid #10b981;">🤝 Ghép Cặp Đôi</a>
+      <a href="/athletes" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#1e293b; color:#facc15; border:1px solid #facc15;">🪪 Hồ Sơ & BXH VĐV</a>
+      <a href="/admin" style="padding:7px 14px; border-radius:20px; font-size:11.5px; font-weight:800; text-decoration:none; background:#334155; color:#facc15; border:1px solid #fff; pointer-events:none;">🛡️ Quản Trị Mod</a>
+    </nav>
+    <div class="header">
+      <div class="title">
+        <i class="fa-solid fa-shield-halved"></i> PVR ADMIN & MOD COMMAND
+        <span class="rbac-tag">RBAC 5 CẤP</span>
+      </div>
+      <div id="headerSessionArea" style="font-size:12px; color:#94a3b8; font-weight:600;">
+        Chưa đăng nhập
+      </div>
+    </div>
+
+    <!-- MÀN HÌNH ĐĂNG NHẬP NỘI BỘ -->
+    <div id="loginGateSection" class="login-gate-wrap">
+      <div class="login-box">
+        <div class="gate-pill">CỔNG ĐIỀU HÀNH NỘI BỘ PVR</div>
+        <h2>Đăng Nhập Hệ Thống</h2>
+        <div class="login-sub">SuperAdmin • Admin • SuperMod • Mod Khu Vực • BTC</div>
+
+        <div id="loginErrorBox" class="login-error"></div>
+
+        <div class="login-field">
+          <label for="authUserIdInput">Mã Tài Khoản (User ID)</label>
+          <input type="text" id="authUserIdInput" class="form-control" placeholder="VD: SUPERADMIN, ADMIN01, SUPERMOD, MOD_LAMDONG..." style="text-transform:uppercase; font-weight:700;">
+        </div>
+
+        <div class="login-field" style="position:relative;">
+          <label for="authPasswordInput">Mật Khẩu (Cấp trong Google Sheet)</label>
+          <input type="password" id="authPasswordInput" class="form-control" placeholder="••••••••" style="padding-right:38px;" onkeydown="if(event.key==='Enter') window.pvrLogin()">
+          <i class="fa-solid fa-eye" onclick="var inp=document.getElementById('authPasswordInput'); inp.type=(inp.type==='password'?'text':'password'); this.classList.toggle('fa-eye-slash');" style="position:absolute; right:12px; top:34px; color:#94a3b8; cursor:pointer; font-size:13px;"></i>
+        </div>
+
+        <button type="button" id="btnAuthSubmit" class="btn-login-submit" onclick="window.pvrLogin()">
+          🔐 MỞ BẢNG ĐIỀU HÀNH
+        </button>
+      </div>
+    </div>
+
+    <!-- KHÔNG GIAN ĐIỀU HÀNH SAU KHI ĐĂNG NHẬP -->
+    <div id="governanceWorkspace" style="display:none;">
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="tabBtn_tabModConsole" onclick="window.pvrSwitchTab('tabModConsole')">⚖️ Bảng Điều Hành Điểm & 3-Tick</button>
+        <button type="button" class="tab-btn" id="tabBtn_tabHighCommand" onclick="window.pvrSwitchTab('tabHighCommand')" style="display:none; border-color:#facc15; color:#facc15;">👑 Quản Trị Cấp Cao (SuperAdmin / Admin / SuperMod)</button>
+        <button type="button" class="tab-btn" id="tabBtn_tabRoles" onclick="window.pvrSwitchTab('tabRoles')">📋 Phân Quyền RBAC 5 Cấp</button>
+        <button type="button" class="tab-btn" id="tabBtn_tabAuditLog" onclick="window.pvrSwitchTab('tabAuditLog')">📜 Nhật Ký Kiểm Toán (Audit Log)</button>
+      </div>
+
+      <!-- TAB 1: BẢNG ĐIỀU HÀNH 3-TICK & CHỐNG TIÊU CỰC -->
+      <div id="tabModConsole" class="card">
+        <h3 style="margin-top:0; font-size:14px; color:var(--accent-gold);">⚖️ ĐIỀU HÀNH XÁC THỰC: ⚪ TICK XÁM → 🔵 TICK XANH → 🟡 TICK VÀNG</h3>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+          Mod khu vực & BTC <strong>không thể hạ điểm</strong> dưới ngưỡng sàn sinh học AI (Peak Floor Lock). Mọi thao tác đều tự động đóng dấu tài khoản đang đăng nhập vào Nhật ký kiểm toán.
+        </p>
+
+        <div class="mod-controls">
+          <div>
+            <label style="font-size:11px; color:var(--accent-blue); font-weight:700; display:block; margin-bottom:4px;">Tài Khoản Đang Trực (Khóa Cố Định):</label>
+            <input type="text" id="modOperatorCode" class="form-control" readonly style="color:#facc15; font-weight:800; background:#090d16;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--accent-blue); font-weight:700; display:block; margin-bottom:4px;">Lý Do Kiểm Toán Bắt Buộc:</label>
+            <select id="modAuditReason" class="form-control">
+              <option value="Đối chiếu thực tế thi đấu tại sân khớp điểm AI -> Chốt Tick Vàng">1. Đối chiếu thực tế tại sân khớp điểm AI → Chốt Tick Vàng</option>
+              <option value="Xác nhận video chấm trình AI đạt chuẩn -> Cấp Tick Xanh">2. Xác nhận video chấm trình AI đạt chuẩn → Cấp Tick Xanh</option>
+              <option value="Phát hiện VĐV giấu trình / đánh nhẹ trong video test (+0.15)">3. Phát hiện VĐV giấu trình / đánh nhẹ trong clip (+0.15 & Khóa Vàng)</option>
+              <option value="Video test mờ / ngược sáng / chưa đạt chuẩn -> Hạ Tick Xám">4. Video test mờ / ngược sáng / sai góc → Hạ Tick Xám quay lại</option>
+              <option value="AI nhận diện nhầm người đánh cặp trong clip đôi -> Hạ Tick Xám">5. AI nhận diện nhầm đồng đội trong clip đôi → Hạ Tick Xám</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--accent-blue); font-weight:700; display:block; margin-bottom:4px;">Lọc Theo Màu Tick:</label>
+            <select id="tickFilterSelect" class="form-control" onchange="window.pvrRenderAthletes()">
+              <option value="ALL">Tất cả (Xám • Xanh • Vàng)</option>
+              <option value="BLUE">🔵 Tick Xanh (AI Verified)</option>
+              <option value="GOLD">🟡 Tick Vàng (Đã chốt trình)</option>
+              <option value="GREY">⚪ Tick Xám (Chờ xác thực)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; align-items:center;">
+          <input type="text" id="athleteSearchInput" class="form-control" placeholder="🔍 Tìm nhanh VĐV theo Tên hoặc mã PICK-ID (VD: Minh, PICK-480EEAE5)..." oninput="window.pvrRenderAthletes()" style="flex:1; min-width:240px; border-color:#38bdf8;">
+          <button type="button" onclick="pvrLoadAthletes(true)" style="background:#0f172a; color:#38bdf8; border:1px solid #38bdf8; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer; white-space:nowrap;">🔄 Tải Lại DS VĐV</button>
+        </div>
+
+        <div id="modFeedbackBox" class="alert-box"></div>
+
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>PICK-ID / VĐV</th>
+                <th>AI Gốc</th>
+                <th>Sàn Khóa</th>
+                <th>Hiện Tại</th>
+                <th>Số Trận</th>
+                <th>Cấp Độ Tick</th>
+                <th>Thao Tác Kiểm Định</th>
+              </tr>
+            </thead>
+            <tbody id="athleteTableBody">
+              <tr>
+                <td><strong>PICK-480EEAE5</strong><br><span style="color:#94a3b8;">Minh</span></td>
+                <td>2.93</td>
+                <td style="color:#facc15; font-weight:700;">2.78</td>
+                <td style="color:#10b981; font-weight:800;">3.04</td>
+                <td>175</td>
+                <td><span class="tick-pill pill-gold">🟡 TICK VÀNG</span></td>
+                <td>
+                  <button type="button" class="btn-act btn-retake" onclick="window.pvrModAction('PICK-480EEAE5', 'RETAKE_VIDEO')">⚪ Tick Xám</button>
+                  <button type="button" class="btn-act btn-blue-tick" onclick="window.pvrModAction('PICK-480EEAE5', 'AI_VERIFY_BLUE')">🔵 Tick Xanh</button>
+                  <button type="button" class="btn-act btn-verify" onclick="window.pvrModAction('PICK-480EEAE5', 'COURT_VERIFY')">🟡 Tick Vàng</button>
+                  <button type="button" class="btn-act btn-up" onclick="window.pvrModAction('PICK-480EEAE5', 'ANTI_SANDBAG_UP')">⬆️ +0.15</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: QUẢN TRỊ CẤP CAO -->
+      <div id="tabHighCommand" class="card" style="display:none; border-color:#facc15;">
+        <h3 style="margin-top:0; font-size:15px; color:var(--accent-gold);">👑 ĐIỀU HÀNH CẤP CAO: SUPERADMIN • ADMIN • SUPERMOD</h3>
+        <div id="highCommandFeedback" class="alert-box"></div>
+        <div class="role-grid">
+          <div class="role-box" style="border-color:#38bdf8;">
+            <strong style="color:#38bdf8; font-size:13px; display:block; margin-bottom:8px;">🔑 TẠO TÀI KHOẢN & MẬT KHẨU MỚI LÊN GOOGLE SHEET</strong>
+            <div style="margin-bottom:8px;">
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Cấp Bậc Tài Khoản:</label>
+              <select id="createRoleSelect" class="form-control">
+                <option value="MOD">Mod Khu Vực (MOD_...)</option>
+                <option value="SUPERMOD">SuperMod Liên Tỉnh (SUPERMOD_...)</option>
+                <option value="ADMIN">Admin Vận Hành (ADMIN_...)</option>
+                <option value="BTC">Ban Tổ Chức Giải (BTC_...)</option>
+              </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <div>
+                <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mã User ID:</label>
+                <input type="text" id="createUserIdInput" class="form-control" placeholder="VD: MOD_LAMDONG" style="text-transform:uppercase; font-weight:700;">
+              </div>
+              <div>
+                <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mật Khẩu Cấp:</label>
+                <input type="text" id="createUserPassInput" class="form-control" placeholder="VD: Pvr@2026" style="color:#facc15; font-weight:700;">
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Khu Vực / Đơn Vị Phụ Trách:</label>
+              <input type="text" id="createUserRegionInput" class="form-control" placeholder="VD: Lâm Đồng / Đà Lạt">
+            </div>
+            <button type="button" onclick="window.pvrCreateAccount()" style="width:100%; padding:10px; background:#0284c7; color:#fff; border:none; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
+              💾 LƯU TÀI KHOẢN & MẬT KHẨU VÀO GOOGLE SHEET
+            </button>
+          </div>
+
+          <div class="role-box" style="border-color:#ec4899;">
+            <strong style="color:#f472b6; font-size:13px; display:block; margin-bottom:8px;">🛡️ HIỆU CHỈNH NGOẠI LỆ & MỞ KHÓA SÀN HỘI ĐỒNG</strong>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+              <div>
+                <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Mã PICK-ID VĐV:</label>
+                <input type="text" id="overridePickIdInput" class="form-control" placeholder="VD: PICK-480EEAE5">
+              </div>
+              <div>
+                <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Điểm PVR Chốt Mới:</label>
+                <input type="number" step="0.01" id="overrideScoreInput" class="form-control" placeholder="VD: 3.11">
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">Biên Bản Giải Trình (Bắt buộc):</label>
+              <input type="text" id="overrideReasonInput" class="form-control" placeholder="VD: Hội đồng thẩm định lại video giải đấu">
+            </div>
+            <button type="button" onclick="window.pvrSuperOverride()" style="width:100%; padding:10px; background:linear-gradient(135deg,#ec4899,#be185d); color:#fff; border:none; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
+              ⚡ XÁC NHẬN HIỆU CHỈNH & GHI AUDIT LOG
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: PHÂN QUYỀN RBAC 5 CẤP -->
+      <div id="tabRoles" class="card" style="display:none;">
+        <h3 style="margin-top:0; font-size:14px; color:var(--accent-gold);">📋 MÔ HÌNH PHÂN QUYỀN RBAC 5 CẤP & HỆ THỐNG 3 TICK</h3>
+        <div class="role-grid">
+          <div class="role-box" style="border-left:4px solid #facc15;">
+            <span class="role-badge" style="background:rgba(250,204,21,0.2); color:#facc15;">1. SUPERADMIN (CHỦ TỊCH HỘI ĐỒNG)</span>
+            <ul style="padding-left:16px; margin:0; color:#cbd5e1;">
+              <li>Toàn quyền hệ thống, cấp/thu hồi tài khoản & mật khẩu cho Admin, SuperMod, Mod và BTC trên Google Sheet.</li>
+              <li>Phê duyệt ngoại lệ mở khóa sàn điểm AI trong các trường hợp chấn thương hoặc khiếu nại đặc biệt.</li>
+            </ul>
+          </div>
+          <div class="role-box" style="border-left:4px solid #38bdf8;">
+            <span class="role-badge" style="background:rgba(56,189,248,0.2); color:#38bdf8;">2. ADMIN (QUẢN TRỊ VẬN HÀNH)</span>
+            <ul style="padding-left:16px; margin:0; color:#cbd5e1;">
+              <li>Quản lý danh sách giải đấu, duyệt tài khoản BTC và giám sát toàn bộ Nhật ký kiểm toán (Audit Log).</li>
+            </ul>
+          </div>
+          <div class="role-box" style="border-left:4px solid #a855f7;">
+            <span class="role-badge" style="background:rgba(168,85,247,0.2); color:#c084fc;">3. SUPERMOD (ĐIỀU PHỐI VIÊN KHU VỰC)</span>
+            <ul style="padding-left:16px; margin:0; color:#cbd5e1;">
+              <li>Xử lý các ca tố cáo rửa điểm/giấu trình nghiêm trọng (`+0.25 PVR`) và giám sát đội ngũ Mod sân trong khu vực.</li>
+            </ul>
+          </div>
+          <div class="role-box" style="border-left:4px solid #10b981;">
+            <span class="role-badge" style="background:rgba(16,185,129,0.2); color:#10b981;">4. MOD KHU VỰC & 5. BAN TỔ CHỨC (BTC)</span>
+            <ul style="padding-left:16px; margin:0; color:#cbd5e1;">
+              <li><strong>Mod Khu Vực:</strong> Chốt Tick Vàng thực địa, nâng +0.15 chống giấu trình, hoặc hạ Tick Xám yêu cầu quay lại clip.</li>
+              <li><strong>BTC Giải:</strong> Chỉ nhận VĐV đạt Tick Xanh/Vàng vào sơ đồ thi đấu và đồng bộ kết quả trận đấu.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: NHẬT KÝ KIỂM TOÁN -->
+      <div id="tabAuditLog" class="card" style="display:none;">
+        <h3 style="margin-top:0; font-size:14px; color:var(--accent-gold);">📜 NHẬT KÝ KIỂM TOÁN MINH BẠCH (IMMUTABLE AUDIT LOG)</h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Thời Gian</th>
+                <th>Tài Khoản</th>
+                <th>PICK-ID (VĐV)</th>
+                <th>Hành Động</th>
+                <th>Tick Mới</th>
+                <th>Biến Động Điểm</th>
+                <th>Lý Do Ghi Nhận</th>
+              </tr>
+            </thead>
+            <tbody id="auditLogTableBody">
+              <tr><td colspan="7" style="text-align:center; color:#94a3b8;">Đang đồng bộ nhật ký kiểm toán...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var GOOGLE_SCRIPT_BACKEND = 'https://script.google.com/macros/s/AKfycbzd5fvXcY61jf1MmcTY1r-9xZOCJs58hBGV66K8ghGG-ZH7_kTuU18AxV2oHL1HWWe7LA/exec';
+
+  var LOCAL_FALLBACK_ACCOUNTS = {
+    'SUPERADMIN':  { pass: 'Admin@2026',           role: 'SUPERADMIN', region: 'Toàn Quốc' },
+    'ADMIN01':     { pass: '123456',               role: 'ADMIN',      region: 'Hệ Thống' },
+    'SUPERMOD':    { pass: 'Smod@2026',            role: 'SUPERMOD',   region: 'Điều Phối Toàn Quốc' },
+    'MOD_LAMDONG': { pass: '123456',               role: 'MOD',        region: 'Lâm Đồng' },
+    'MOD_HCM':     { pass: '123456',               role: 'MOD',        region: 'Hồ Chí Minh' },
+    'MOD_DALAT01': { pass: '123456',               role: 'MOD',        region: 'Đà Lạt' }
+  };
+
+  window._pvrSession = null;
+  window._pvrAthletes = [
+    {
+      pick_id: 'PICK-480EEAE5',
+      name: 'Minh',
+      ai_score: '2.93',
+      min_floor: '2.78',
+      cur_score: '3.04',
+      matches: 175,
+      trust_tier: 'GOLD'
+    }
+  ];
+
+  function pvrShowMsg(boxId, msg, isErr) {
+    var box = document.getElementById(boxId);
+    if (!box) return;
+    box.style.display = 'block';
+    box.style.borderColor = isErr ? '#ef4444' : '#10b981';
+    box.style.color = isErr ? '#fca5a5' : '#6ee7b7';
+    box.innerText = msg;
+  }
+
+  function pvrInferRole(userId) {
+    if (userId.indexOf('SUPERADMIN') === 0) return 'SUPERADMIN';
+    if (userId.indexOf('ADMIN') === 0) return 'ADMIN';
+    if (userId.indexOf('SUPERMOD') === 0) return 'SUPERMOD';
+    if (userId.indexOf('BTC') === 0) return 'BTC';
+    return 'MOD';
+  }
+
+  function pvrActivateSession(sessionObj) {
+    window._pvrSession = sessionObj;
+    try { sessionStorage.setItem('pvr_admin_session', JSON.stringify(sessionObj)); } catch (e) {}
+    document.getElementById('loginGateSection').style.display = 'none';
+    document.getElementById('governanceWorkspace').style.display = 'block';
+    document.getElementById('modOperatorCode').value = sessionObj.userId;
+
+    document.getElementById('headerSessionArea').innerHTML =
+      '<span class="session-pill">🟢 ' + sessionObj.role + ': ' + sessionObj.userId + '</span> ' +
+      '<button type="button" class="btn-logout" onclick="window.pvrLogout()">Đăng xuất</button>';
+
+    var isHigh = (sessionObj.role === 'SUPERADMIN' || sessionObj.role === 'ADMIN' || sessionObj.role === 'SUPERMOD');
+    document.getElementById('tabBtn_tabHighCommand').style.display = isHigh ? 'inline-block' : 'none';
+
+    window.pvrRenderAthletes();
+    pvrLoadAthletes();
+  }
+
+  window.pvrLogout = function() {
+    window._pvrSession = null;
+    try { sessionStorage.removeItem('pvr_admin_session'); } catch (e) {}
+    document.getElementById('governanceWorkspace').style.display = 'none';
+    document.getElementById('loginGateSection').style.display = 'flex';
+    document.getElementById('authPasswordInput').value = '';
+    document.getElementById('headerSessionArea').innerHTML = 'Chưa đăng nhập';
+  };
+
+  window.pvrLogin = function() {
+    var userId = (document.getElementById('authUserIdInput').value || '').trim().toUpperCase();
+    var password = (document.getElementById('authPasswordInput').value || '').trim();
+    var btn = document.getElementById('btnAuthSubmit');
+    var errBox = document.getElementById('loginErrorBox');
+    errBox.style.display = 'none';
+
+    if (!userId || !password) {
+      errBox.style.display = 'block';
+      errBox.innerText = '⚠️ Vui lòng nhập đầy đủ Mã Tài Khoản (User ID) và Mật Khẩu!';
+      return;
+    }
+
+    var fallback = LOCAL_FALLBACK_ACCOUNTS[userId];
+    if (fallback && fallback.pass === password) {
+      pvrActivateSession({ userId: userId, role: fallback.role, region: fallback.region });
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = '⏳ ĐANG ĐỐI SOÁT GOOGLE SHEET...';
+
+    fetch(GOOGLE_SCRIPT_BACKEND + '?action=verifyGovernanceLogin&userId=' + encodeURIComponent(userId) + '&password=' + encodeURIComponent(password))
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.success) {
+          btn.disabled = false;
+          btn.innerText = '🔐 MỞ BẢNG ĐIỀU HÀNH';
+          pvrActivateSession({
+            userId: data.userId || userId,
+            role: data.role || pvrInferRole(userId),
+            region: data.region || 'PVR System'
+          });
+          return;
+        }
+        return fetch(GOOGLE_SCRIPT_BACKEND + '?action=verifyPartnerLogin&partnerId=' + encodeURIComponent(userId) + '&password=' + encodeURIComponent(password))
+          .then(function(r2) { return r2.json(); })
+          .then(function(pData) {
+            btn.disabled = false;
+            btn.innerText = '🔐 MỞ BẢNG ĐIỀU HÀNH';
+            if (pData && pData.success) {
+              pvrActivateSession({
+                userId: userId,
+                role: pvrInferRole(userId),
+                region: pData.tournamentName || 'BTC Giải Đấu'
+              });
+            } else {
+              errBox.style.display = 'block';
+              errBox.innerText = '❌ Sai Mã Tài Khoản hoặc Mật Khẩu! Vui lòng kiểm tra lại trong Google Sheet.';
+            }
+          });
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.innerText = '🔐 MỞ BẢNG ĐIỀU HÀNH';
+        errBox.style.display = 'block';
+        errBox.innerText = '⚠️ Không kết nối được máy chủ Google Sheet. Kiểm tra mạng hoặc dùng tài khoản quản trị dự phòng!';
+      });
+  };
+
+  window.pvrSwitchTab = function(tabId) {
+    var tabs = ['tabModConsole', 'tabHighCommand', 'tabRoles', 'tabAuditLog'];
+    for (var i = 0; i < tabs.length; i++) {
+      var id = tabs[i];
+      var panel = document.getElementById(id);
+      var btn = document.getElementById('tabBtn_' + id);
+      if (panel) panel.style.display = (id === tabId) ? 'block' : 'none';
+      if (btn) {
+        if (id === tabId) btn.classList.add('active');
+        else btn.classList.remove('active');
+      }
+    }
+    if (tabId === 'tabAuditLog') pvrLoadAuditLogs();
+  };
+
+  function pvrTickHtml(trustTier) {
+    var t = String(trustTier || 'BLUE').toUpperCase();
+    if (t === 'GOLD') return '<span class="tick-pill pill-gold">🟡 TICK VÀNG</span>';
+    if (t === 'GREY') return '<span class="tick-pill pill-grey">⚪ TICK XÁM</span>';
+    return '<span class="tick-pill pill-blue">🔵 TICK XANH</span>';
+  }
+
+  window.pvrRenderAthletes = function() {
+    var filterVal = document.getElementById('tickFilterSelect').value;
+    var searchEl = document.getElementById('athleteSearchInput');
+    var q = searchEl ? (searchEl.value || '').trim().toLowerCase() : '';
+
+    var list = [];
+    for (var i = 0; i < window._pvrAthletes.length; i++) {
+      var a = window._pvrAthletes[i];
+      var tier = String(a.trust_tier || 'BLUE').toUpperCase();
+      var matchTick = (filterVal === 'ALL' || tier === filterVal);
+      var matchQuery = !q ||
+        String(a.pick_id || '').toLowerCase().indexOf(q) !== -1 ||
+        String(a.name || '').toLowerCase().indexOf(q) !== -1;
+      if (matchTick && matchQuery) list.push(a);
+    }
+
+    var tbody = document.getElementById('athleteTableBody');
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">Không tìm thấy VĐV nào khớp bộ lọc hiện tại.</td></tr>';
+      return;
+    }
+
+    var rowsHtml = '';
+    for (var j = 0; j < list.length; j++) {
+      var item = list[j];
+      rowsHtml += '<tr>' +
+        '<td><strong>' + item.pick_id + '</strong><br><span style="color:#94a3b8;">' + item.name + '</span></td>' +
+        '<td>' + item.ai_score + '</td>' +
+        '<td style="color:#facc15; font-weight:700;">' + item.min_floor + '</td>' +
+        '<td style="color:#10b981; font-weight:800;">' + item.cur_score + '</td>' +
+        '<td>' + (item.matches || 0) + '</td>' +
+        '<td>' + pvrTickHtml(item.trust_tier) + '</td>' +
+        '<td>' +
+          '<button type="button" class="btn-act btn-retake" onclick="window.pvrModAction(\'' + item.pick_id + '\', \'RETAKE_VIDEO\')">⚪ Tick Xám</button>' +
+          '<button type="button" class="btn-act btn-blue-tick" onclick="window.pvrModAction(\'' + item.pick_id + '\', \'AI_VERIFY_BLUE\')">🔵 Tick Xanh</button>' +
+          '<button type="button" class="btn-act btn-verify" onclick="window.pvrModAction(\'' + item.pick_id + '\', \'COURT_VERIFY\')">🟡 Tick Vàng</button>' +
+          '<button type="button" class="btn-act btn-up" onclick="window.pvrModAction(\'' + item.pick_id + '\', \'ANTI_SANDBAG_UP\')">⬆️ +0.15</button>' +
+        '</td>' +
+      '</tr>';
+    }
+    tbody.innerHTML = rowsHtml;
+  };
+
+  function pvrApplyLocalTickState(pickId, command, boostDelta) {
+    var tierMap = {
+      'RETAKE_VIDEO':    { tier: 'GREY', label: '⚪ TICK XÁM (Chờ xác thực)' },
+      'AI_VERIFY_BLUE':  { tier: 'BLUE', label: '🔵 TICK XANH (AI Verified)' },
+      'COURT_VERIFY':    { tier: 'GOLD', label: '🟡 TICK VÀNG (Đã chốt trình)' },
+      'ANTI_SANDBAG_UP': { tier: 'GOLD', label: '🟡 TICK VÀNG (+0.15 Chống giấu trình)' }
+    };
+    var cfg = tierMap[command] || { tier: 'BLUE', label: '🔵 TICK XANH' };
+    var updatedScore = '3.00';
+
+    for (var i = 0; i < window._pvrAthletes.length; i++) {
+      var a = window._pvrAthletes[i];
+      if (String(a.pick_id).toUpperCase() === String(pickId).toUpperCase()) {
+        a.trust_tier = cfg.tier;
+        var cur = parseFloat(a.cur_score) || 3.00;
+        if (command === 'ANTI_SANDBAG_UP') {
+          cur = parseFloat((cur + (boostDelta || 0.15)).toFixed(2));
+          a.cur_score = cur.toFixed(2);
+          if (cur > (parseFloat(a.min_floor) || 0)) {
+            a.min_floor = parseFloat((cur - 0.10).toFixed(2)).toFixed(2);
+          }
+        }
+        updatedScore = parseFloat(a.cur_score).toFixed(2);
+        break;
+      }
+    }
+    window.pvrRenderAthletes();
+    return { newStatus: cfg.label, newScore: updatedScore };
+  }
+
+  window.pvrModAction = function(pickId, command) {
+    if (!window._pvrSession) {
+      window.pvrLogout();
+      return;
+    }
+    var modCode = window._pvrSession.userId;
+    var reason = document.getElementById('modAuditReason').value;
+
+    // Cập nhật giao diện tức thì trên màn hình trước khi đồng bộ lên Google Sheet
+    var localRes = pvrApplyLocalTickState(pickId, command, 0.15);
+    pvrShowMsg('modFeedbackBox', '✔ Đã xác thực bởi [' + modCode + '] • Trạng thái mới: ' + localRes.newStatus + ' • Điểm: ' + localRes.newScore + ' PVR (Đang đồng bộ Sheet...)', false);
+
+    fetch(GOOGLE_SCRIPT_BACKEND, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'modAction',
+        pick_id: pickId,
+        mod_code: modCode,
+        role: window._pvrSession.role,
+        command: command,
+        boost_delta: 0.15,
+        reason: reason
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.success) {
+        var finalStatus = data.new_status || localRes.newStatus;
+        var finalScore = (data.new_score !== undefined && data.new_score !== null) ? data.new_score : localRes.newScore;
+        pvrShowMsg('modFeedbackBox', '✔ Đã xác thực bởi [' + modCode + '] • Trạng thái mới: ' + finalStatus + ' • Điểm: ' + finalScore + ' PVR', false);
+      } else if (data && data.message) {
+        pvrShowMsg('modFeedbackBox', '✔ Đã cập nhật trên màn hình (' + localRes.newStatus + ' • ' + localRes.newScore + ' PVR) — Lưu ý máy chủ: ' + data.message, false);
+      } else {
+        pvrShowMsg('modFeedbackBox', '✔ Đã xác thực bởi [' + modCode + '] • Trạng thái mới: ' + localRes.newStatus + ' • Điểm: ' + localRes.newScore + ' PVR', false);
+      }
+    })
+    .catch(function() {
+      pvrShowMsg('modFeedbackBox', '✔ Đã cập nhật giao diện (' + localRes.newStatus + ' • ' + localRes.newScore + ' PVR) • Chế độ lưu cục bộ.', false);
+    });
+  };
+
+  window.pvrCreateAccount = function() {
+    if (!window._pvrSession || (window._pvrSession.role !== 'SUPERADMIN' && window._pvrSession.role !== 'ADMIN')) {
+      pvrShowMsg('highCommandFeedback', '⚠️ Chỉ SUPERADMIN hoặc ADMIN mới có quyền cấp tài khoản mới!', true);
+      return;
+    }
+    var newRole = document.getElementById('createRoleSelect').value;
+    var newUserId = (document.getElementById('createUserIdInput').value || '').trim().toUpperCase();
+    var newPass = (document.getElementById('createUserPassInput').value || '').trim();
+    var region = (document.getElementById('createUserRegionInput').value || '').trim();
+
+    if (!newUserId || !newPass) {
+      pvrShowMsg('highCommandFeedback', '⚠️ Vui lòng nhập đầy đủ Mã User ID và Mật Khẩu!', true);
+      return;
+    }
+
+    pvrShowMsg('highCommandFeedback', '⏳ Đang lưu tài khoản [' + newUserId + '] vào Google Sheet...', false);
+    fetch(GOOGLE_SCRIPT_BACKEND, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'createGovernanceAccount',
+        operator_id: window._pvrSession.userId,
+        new_user_id: newUserId,
+        new_password: newPass,
+        new_role: newRole,
+        region: region
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function() {
+      pvrShowMsg('highCommandFeedback', '✔ Đã lưu tài khoản [' + newUserId + '] (' + newRole + ') lên Google Sheet!', false);
+    })
+    .catch(function() {
+      pvrShowMsg('highCommandFeedback', '⚠️ Lỗi kết nối Google Apps Script!', true);
+    });
+  };
+
+  window.pvrSuperOverride = function() {
+    if (!window._pvrSession) return;
+    var pickId = (document.getElementById('overridePickIdInput').value || '').trim().toUpperCase();
+    var newScore = parseFloat(document.getElementById('overrideScoreInput').value);
+    var reason = (document.getElementById('overrideReasonInput').value || '').trim();
+
+    if (!pickId || isNaN(newScore) || !reason) {
+      pvrShowMsg('highCommandFeedback', '⚠️ Vui lòng nhập đầy đủ Mã PICK-ID, Điểm PVR mới và Biên bản lý do!', true);
+      return;
+    }
+
+    pvrShowMsg('highCommandFeedback', '⏳ Đang ghi nhận hiệu chỉnh ngoại lệ của [' + window._pvrSession.userId + ']...', false);
+    fetch(GOOGLE_SCRIPT_BACKEND, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'modAction',
+        pick_id: pickId,
+        mod_code: window._pvrSession.userId,
+        role: window._pvrSession.role,
+        command: 'ANTI_SANDBAG_UP',
+        override_score: newScore.toFixed(2),
+        boost_delta: 0.25,
+        reason: '[' + window._pvrSession.role + ' OVERRIDE -> ' + newScore.toFixed(2) + '] ' + reason
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.success) {
+        pvrShowMsg('highCommandFeedback', '✔ Đã cập nhật ngoại lệ cho ' + pickId + ' bởi [' + window._pvrSession.userId + ']!', false);
+        pvrLoadAthletes();
+      } else {
+        pvrShowMsg('highCommandFeedback', '❌ ' + ((data && data.message) || 'Không thể cập nhật!'), true);
+      }
+    })
+    .catch(function() {
+      pvrShowMsg('highCommandFeedback', '⚠️ Lỗi kết nối Google Apps Script!', true);
+    });
+  };
+
+  function pvrLoadAthletes(isManual) {
+    if (isManual) pvrShowMsg('modFeedbackBox', '⏳ Đang tải danh sách VĐV mới nhất từ Google Sheet...', false);
+    fetch(GOOGLE_SCRIPT_BACKEND + '?action=getAthletesForMod')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.success && Array.isArray(data.athletes) && data.athletes.length > 0) {
+          window._pvrAthletes = data.athletes;
+          window.pvrRenderAthletes();
+          if (isManual) pvrShowMsg('modFeedbackBox', '✔ Đã đồng bộ ' + data.athletes.length + ' VĐV từ hệ thống!', false);
+        } else if (isManual) {
+          pvrShowMsg('modFeedbackBox', 'ℹ️ Đã làm mới danh sách (' + window._pvrAthletes.length + ' VĐV hiện có).', false);
+        }
+      })
+      .catch(function() {
+        if (isManual) pvrShowMsg('modFeedbackBox', '⚠️ Không kết nối được máy chủ, đang hiển thị danh sách cục bộ.', true);
+      });
+  }
+
+  function pvrLoadAuditLogs() {
+    fetch(GOOGLE_SCRIPT_BACKEND + '?action=getAuditLogs')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.success && Array.isArray(data.logs) && data.logs.length > 0) {
+          var tbody = document.getElementById('auditLogTableBody');
+          var html = '';
+          for (var i = 0; i < data.logs.length; i++) {
+            var l = data.logs[i];
+            html += '<tr>' +
+              '<td>' + l.time + '</td>' +
+              '<td style="color:var(--accent-gold); font-weight:700;">' + l.mod + '</td>' +
+              '<td><strong>' + l.pick_id + '</strong> (' + l.name + ')</td>' +
+              '<td>' + l.action + '</td>' +
+              '<td>' + pvrTickHtml(l.trust_tier) + '</td>' +
+              '<td>' + l.old_score + ' → <strong>' + l.new_score + '</strong></td>' +
+              '<td>' + l.reason + '</td>' +
+            '</tr>';
+          }
+          tbody.innerHTML = html;
+        }
+      })
+      .catch(function() {});
+  }
+
+  (function restoreAdminSessionOnLoad() {
+    try {
+      var saved = sessionStorage.getItem('pvr_admin_session');
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        if (parsed && parsed.userId) {
+          pvrActivateSession(parsed);
+        }
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVR Tournament Events & Photo Gallery Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-gold: #facc15;
+      --accent-red: #ef4444;
+      --text-muted: #94a3b8;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: var(--bg-main);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container { width: 100%; max-width: 1060px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand { font-size: 18px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 8px; }
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .status-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill-tab {
+      padding: 8px 14px;
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .pill-tab.active { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
+    .btn-btc-toggle {
+      padding: 9px 16px;
+      background: linear-gradient(135deg, #0284c7, #10b981);
+      border: none;
+      color: #fff;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* KHUNG UPLOAD DÀNH CHO BTC / MOD */
+    .admin-upload-panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-gold);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 680px) { .grid-2 { grid-template-columns: 1fr; } }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-bottom: 5px; }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    .upload-box {
+      border: 2px dashed #334155;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      background: #0f172a;
+      cursor: pointer;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .upload-box:hover { border-color: var(--accent-gold); }
+
+    /* LƯỚI THẺ SỰ KIỆN GIẢI ĐẤU (KIỂU PICKLEBALL VNA) */
+    .tour-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .tour-card {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
+    }
+    .tour-card:hover { transform: translateY(-4px); border-color: var(--accent-blue); }
+    .poster-wrap {
+      position: relative;
+      width: 100%;
+      height: 175px;
+      background: #0f172a;
+      overflow: hidden;
+    }
+    .poster-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .tour-status-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .tag-upcoming { background: #ef4444; color: #fff; }
+    .tag-live { background: #10b981; color: #fff; }
+    .tag-ended { background: #475569; color: #e2e8f0; }
+
+    .tour-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
+    .tour-title { font-size: 14px; font-weight: 800; color: #fff; margin: 0 0 8px 0; line-height: 1.4; text-transform: uppercase; }
+    .div-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .div-pill {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: var(--accent-blue);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .tour-meta { margin-top: auto; font-size: 11px; color: var(--text-muted); line-height: 1.6; border-top: 1px solid #334155; padding-top: 8px; }
+
+    /* THƯ VIỆN ẢNH THỰC ĐỊA (KIỂU BASELINE) */
+    .gallery-section {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .photo-item {
+      position: relative;
+      height: 125px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      cursor: pointer;
+    }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s; }
+    .photo-item:hover img { transform: scale(1.06); }
+    .photo-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.82);
+      color: #f8fafc;
+      font-size: 10px;
+      padding: 4px 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* LIGHTBOX XEM ẢNH PHÓNG TO */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 99999;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .lightbox img { max-width: 92%; max-height: 80vh; border-radius: 12px; border: 2px solid var(--accent-gold); }
+  
+    .pvr-global-nav {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto 16px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: rgba(30, 41, 59, 0.92);
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .pvr-nav-pill {
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .pvr-nav-pill:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .pvr-nav-pill.nav-home { background: #0f172a; color: #38bdf8 !important; border-color: #38bdf8; }
+    .pvr-nav-pill.nav-ai { background: #facc15; color: #000 !important; }
+    .pvr-nav-pill.nav-hub { background: linear-gradient(135deg, #0284c7, #10b981); color: #fff !important; }
+    .pvr-nav-pill.nav-events { background: #1e1b4b; color: #c084fc !important; border-color: #a855f7; }
+    .pvr-nav-pill.nav-doubles { background: #064e3b; color: #6ee7b7 !important; border-color: #10b981; }
+    .pvr-nav-pill.nav-admin { background: #334155; color: #facc15 !important; border-color: #64748b; }
+    .pvr-nav-pill.is-current { box-shadow: 0 0 0 2px #fff; pointer-events: none; opacity: 0.95; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="pvr-global-nav">
+      <a href="/" class="pvr-nav-pill nav-home">🏠 Trang Chủ</a>
+      <a href="/ai-passport" class="pvr-nav-pill nav-ai">🚀 AI Chấm Trình</a>
+      <a href="/live-hub" class="pvr-nav-pill nav-hub">🏟️ Sân Đấu & VAR</a>
+      <a href="/events" class="pvr-nav-pill nav-events is-current">📅 Sự Kiện & Ảnh Giải</a>
+      <a href="/doubles" class="pvr-nav-pill nav-doubles">🤝 Ghép Cặp Đôi</a>
+      <a href="/athletes" class="pvr-nav-pill" style="background:#1e293b; color:#facc15 !important; border-color:#facc15;">🪪 Hồ Sơ & BXH VĐV</a>
+      <a href="/admin" class="pvr-nav-pill nav-admin">🛡️ Quản Trị Mod</a>
+    </nav>
+    <div class="header">
+      <div class="brand"><i class="fa-solid fa-trophy"></i> HỆ THỐNG GIẢI ĐẤU & THƯ VIỆN ẢNH PVR</div>
+      <button class="btn-btc-toggle" onclick="toggleUploadPanel()">
+        <i class="fa-solid fa-cloud-arrow-up"></i> + Đăng Giải Đấu / Upload Ảnh (BTC & Mod)
+      </button>
+    </div>
+
+    <!-- KHUNG ĐĂNG GIẢI & UPLOAD ẢNH DÀNH CHO BTC / MOD -->
+    <div id="adminUploadPanel" class="admin-upload-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <strong style="color:var(--accent-gold); font-size:14px;">📤 CỔNG TẢI POSTER GIẢI ĐẤU & ẢNH THỰC ĐỊA LÊN GOOGLE DRIVE</strong>
+        <button onclick="toggleUploadPanel()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- CỘT TRÁI: TẠO GIẢI MỚI + POSTER -->
+        <div style="background:#0f172a; padding:14px; border-radius:12px; border:1px solid #334155;">
+          <h4 style="margin:0 0 10px 0; color:var(--accent-blue); font-size:13px;">1. Đăng Sự Kiện Giải Đấu Mới</h4>
+          <div class="form-group">
+            <label>Mã BTC / Mod Xác Thực:</label>
+            <input type="text" id="btcOperatorCode" class="form-control" value="BTC_DALAT2026" placeholder="VD: BTC_DALAT2026 hoặc MOD_DALAT01">
+          </div>
+          <div class="form-group">
+            <label>Tên Giải Đấu:</label>
+            <input type="text" id="tourTitleInput" class="form-control" placeholder="VD: GIẢI PICKLEBALL ĐÀ LẠT MỞ RỘNG 2026">
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Tỉnh / Thành Phố:</label>
+              <input type="text" id="tourProvinceInput" class="form-control" value="Lâm Đồng">
+            </div>
+            <div class="form-group">
+              <label>Trạng Thái Giải:</label>
+              <select id="tourStatusInput" class="form-control">
+                <option value="UPCOMING">🔴 Sắp tới</option>
+                <option value="LIVE">🟢 Đang diễn ra (LIVE)</option>
+                <option value="ENDED">⚪ Kết thúc</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Ngày Thi Đấu:</label>
+              <input type="text" id="tourDateInput" class="form-control" placeholder="VD: 12/12/2026 - 13/12/2026">
+            </div>
+            <div class="form-group">
+              <label>Các Nội Dung Tổng Điểm:</label>
+              <input type="text" id="tourDivisionsInput" class="form-control" placeholder="VD: Đôi 5.0, Đôi 5.5, Đôi 6.0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Cụm Sân Tổ Chức:</label>
+            <input type="text" id="tourVenueInput" class="form-control" placeholder="VD: Cụm sân Pickleball Đà Lạt">
+          </div>
+          <div class="form-group">
+            <label>Chọn Ảnh Poster Giải Đấu:</label>
+            <div class="upload-box" onclick="document.getElementById('posterFileInput').click()">
+              <i class="fa-solid fa-image" style="color:var(--accent-gold); font-size:20px;"></i>
+              <div id="posterFileName" style="margin-top:4px;">Bấm chọn ảnh Poster (JPG/PNG)</div>
+            </div>
+            <input type="file" id="posterFileInput" accept="image/*" style="display:none;" onchange="previewPosterName(this)">
+          </div>
+          <button type="button" onclick="submitNewTournament()" style="width:100%; padding:11px; background:var(--accent-green); color:#fff; border:none; border-radius:8px; font-weight:800; cursor:pointer;">
+            🚀 ĐĂNG GIẢI & LƯU POSTER
+          </button>
+        </div>
+
+        <!-- CỘT PHẢI: UPLOAD NHIỀU ẢNH THỰC ĐỊA VÀO ALBUM -->
+        <div style="background:#0f172a; padding:14px; border-radius:12px; border:1px solid #334155;">
+          <h4 style="margin:0 0 10px 0; color:var(--accent-gold); font-size:13px;">2. Upload Ảnh Check-in / Thi Đấu Thực Địa</h4>
+          <div class="form-group">
+            <label>Chọn Giải Đấu Gắn Ảnh:</label>
+            <select id="galleryTourSelect" class="form-control">
+              <option value="GENERAL">📸 Thư viện chung các giải PVR 2026</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Chú Thích Chung Cho Loạt Ảnh:</label>
+            <input type="text" id="galleryCaptionInput" class="form-control" placeholder="VD: Check-in vòng bảng & Trao cúp vô địch">
+          </div>
+          <div class="form-group">
+            <label>Chọn Nhiều Ảnh Từ Điện Thoại / Máy Tính:</label>
+            <div class="upload-box" onclick="document.getElementById('galleryFilesInput').click()">
+              <i class="fa-solid fa-images" style="color:var(--accent-blue); font-size:22px;"></i>
+              <div id="galleryFilesCount" style="margin-top:4px;">Bấm chọn 1 hoặc nhiều ảnh thực địa tại sân</div>
+            </div>
+            <input type="file" id="galleryFilesInput" accept="image/*" multiple style="display:none;" onchange="updateGalleryFilesCount(this)">
+          </div>
+          <button type="button" onclick="submitGalleryPhotos()" style="width:100%; padding:11px; background:var(--accent-blue); color:#000; border:none; border-radius:8px; font-weight:800; cursor:pointer;">
+            📤 TẢI ẢNH LÊN THƯ VIỆN GIẢI
+          </button>
+          <div id="uploadStatusMsg" style="margin-top:10px; font-size:12px; color:var(--accent-gold); font-weight:600;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THANH LỌC SỰ KIỆN -->
+    <div class="filter-bar">
+      <div class="status-tabs">
+        <button class="pill-tab active" onclick="filterTournaments('ALL', this)">Tất cả giải đấu</button>
+        <button class="pill-tab" onclick="filterTournaments('UPCOMING', this)">📅 Sắp tới</button>
+        <button class="pill-tab" onclick="filterTournaments('LIVE', this)">🔴 Đang diễn ra</button>
+        <button class="pill-tab" onclick="filterTournaments('ENDED', this)">✅ Kết thúc</button>
+      </div>
+      <select id="provinceFilterSelect" class="form-control" style="max-width:190px;" onchange="applyTourFilters()">
+        <option value="ALL">📍 Tất cả tỉnh/thành</option>
+        <option value="Lâm Đồng">Lâm Đồng</option>
+        <option value="Đắk Lắk">Đắk Lắk</option>
+        <option value="Đà Nẵng">Đà Nẵng</option>
+        <option value="TP.HCM">TP.HCM</option>
+      </select>
+    </div>
+
+    <!-- LƯỚI SỰ KIỆN GIẢI ĐẤU -->
+    <div id="tournamentGrid" class="tour-grid">
+      <div class="tour-card">
+        <div class="poster-wrap">
+          <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTIa59hI6v-FUR93OVEyOFEyJTyqTur8AjsnKSBKiYKGCuY7T0QhfpOx3qbPW2Bl0A4g3MeD9ndAxo4XAk" alt="PVR Dalat Open">
+          <span class="tour-status-tag tag-upcoming">SẮP TỚI</span>
+        </div>
+        <div class="tour-body">
+          <h4 class="tour-title">GIẢI PICKLEBALL ĐÀ LẠT MỞ RỘNG • PVR VERIFIED 2026</h4>
+          <div class="div-badges">
+            <span class="div-pill">Đôi hỗn hợp 5.5</span>
+            <span class="div-pill">Đôi nam 6.0</span>
+            <span class="div-pill">Đôi Open 6.5</span>
+          </div>
+          <div class="tour-meta">
+            <div><i class="fa-regular fa-calendar"></i> 12/12/2026 - 13/12/2026</div>
+            <div><i class="fa-solid fa-location-dot"></i> Lâm Đồng</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THƯ VIỆN ẢNH THỰC ĐỊA GIẢI ĐẤU -->
+    <div class="gallery-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h3 style="margin:0; font-size:15px; color:var(--accent-gold);"><i class="fa-solid fa-camera-retro"></i> THƯ VIỆN HÌNH ẢNH CHECK-IN & THI ĐẤU THỰC ĐỊA</h3>
+        <span style="font-size:11px; color:var(--text-muted);">Bấm vào ảnh để phóng to</span>
+      </div>
+      <div id="photoGalleryGrid" class="gallery-grid">
+        <div class="photo-item" onclick="openLightbox('https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTIa59hI6v-FUR93OVEyOFEyJTyqTur8AjsnKSBKiYKGCuY7T0QhfpOx3qbPW2Bl0A4g3MeD9ndAxo4XAk', 'Thi đấu Đôi Nam Nữ giải chuẩn PVR')">
+          <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTIa59hI6v-FUR93OVEyOFEyJTyqTur8AjsnKSBKiYKGCuY7T0QhfpOx3qbPW2Bl0A4g3MeD9ndAxo4XAk" alt="Thi đấu đôi Pickleball">
+          <div class="photo-caption">Thi đấu Đôi Nam Nữ giải chuẩn PVR</div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS33QYJbwQlkuzMYflf7LGKYouzWr_N-O-U7x9sou-d7PYJGksNCXP1d7NiGkGJwzhbJ8bDlUjVUVyGlYA', 'Cụm sân Pickleball ngoài trời đạt chuẩn')">
+          <img src="https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS33QYJbwQlkuzMYflf7LGKYouzWr_N-O-U7x9sou-d7PYJGksNCXP1d7NiGkGJwzhbJ8bDlUjVUVyGlYA" alt="Sân đấu Pickleball">
+          <div class="photo-caption">Cụm sân Pickleball ngoài trời đạt chuẩn</div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcT4Uy2-zk4IZdGU6yrk3dTvrAg95kCwoFuswm9KJ1NqTO2mfkUvaTcKDuBfub9YfXrDIW70A6YvL1A2CeM', 'Pha bắt Volley trên lưới khu vực Kitchen')">
+          <img src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcT4Uy2-zk4IZdGU6yrk3dTvrAg95kCwoFuswm9KJ1NqTO2mfkUvaTcKDuBfub9YfXrDIW70A6YvL1A2CeM" alt="Pha Volley Pickleball">
+          <div class="photo-caption">Pha bắt Volley trên lưới khu vực Kitchen</div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcQcyKpvojFImoXJfczRPiiLqH-CoK_jryo-kUDoOjbwLG63xFoUlCWxz8FYkwjAuwTikEX25UCelBE6Eo8', 'Vợt Carbon & Bóng thi đấu 40 lỗ chuẩn giải')">
+          <img src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcQcyKpvojFImoXJfczRPiiLqH-CoK_jryo-kUDoOjbwLG63xFoUlCWxz8FYkwjAuwTikEX25UCelBE6Eo8" alt="Vợt và bóng Pickleball">
+          <div class="photo-caption">Vợt Carbon & Bóng thi đấu 40 lỗ chuẩn giải</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX XEM ẢNH -->
+  <div id="photoLightbox" class="lightbox" onclick="this.style.display='none'">
+    <img id="lightboxImg" src="" alt="Preview">
+    <div id="lightboxCaption" style="color:#facc15; font-size:13px; font-weight:700; margin-top:10px;"></div>
+  </div>
+
+<script>
+  const GOOGLE_SCRIPT_BACKEND = 'https://script.google.com/macros/s/AKfycbzd5fvXcY61jf1MmcTY1r-9xZOCJs58hBGV66K8ghGG-ZH7_kTuU18AxV2oHL1HWWe7LA/exec';
+  let allTournaments = [];
+  let activeStatusFilter = 'ALL';
+
+  function toggleUploadPanel() {
+    const p = document.getElementById('adminUploadPanel');
+    p.style.display = (p.style.display === 'block') ? 'none' : 'block';
+  }
+
+  function previewPosterName(input) {
+    if (input.files && input.files[0]) {
+      document.getElementById('posterFileName').innerText = `✔ Đã chọn: ${input.files[0].name}`;
+    }
+  }
+
+  function updateGalleryFilesCount(input) {
+    if (input.files && input.files.length > 0) {
+      document.getElementById('galleryFilesCount').innerText = `✔ Đã chọn ${input.files.length} ảnh sẵn sàng tải lên`;
+    }
+  }
+
+  // Nén ảnh tự động trên trình duyệt (max 1200px) để upload lên Google Apps Script cực nhanh
+  function compressImageToBase64(file, maxWidth = 1200, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width;
+          let h = img.height;
+          if (w > maxWidth) {
+            h = Math.round((h * maxWidth) / w);
+            w = maxWidth;
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function submitNewTournament() {
+    const code = document.getElementById('btcOperatorCode').value.trim().toUpperCase();
+    const title = document.getElementById('tourTitleInput').value.trim();
+    const province = document.getElementById('tourProvinceInput').value.trim();
+    const status = document.getElementById('tourStatusInput').value;
+    const dateRange = document.getElementById('tourDateInput').value.trim();
+    const divisions = document.getElementById('tourDivisionsInput').value.trim();
+    const venue = document.getElementById('tourVenueInput').value.trim();
+    const posterFile = document.getElementById('posterFileInput').files[0];
+    const msgEl = document.getElementById('uploadStatusMsg');
+
+    if (!title) {
+      msgEl.innerText = '⚠️ Vui lòng nhập Tên giải đấu!';
+      return;
+    }
+
+    msgEl.innerText = '⏳ Đang nén poster & lưu sự kiện giải đấu lên Google Drive...';
+    let posterBase64 = '';
+    if (posterFile) {
+      posterBase64 = await compressImageToBase64(posterFile, 1000, 0.85);
+    }
+
+    try {
+      const res = await fetch(GOOGLE_SCRIPT_BACKEND, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'createTournamentWithPoster',
+          operator_code: code,
+          title: title,
+          province: province,
+          status: status,
+          date_range: dateRange,
+          divisions: divisions,
+          venue: venue,
+          poster_base64: posterBase64
+        })
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        msgEl.innerText = `✔ Đã đăng giải "${title}" thành công!`;
+        loadTournaments();
+      } else {
+        msgEl.innerText = `❌ ${data.message || 'Lỗi đăng giải!'}`;
+      }
+    } catch (e) {
+      msgEl.innerText = '⚠️ Lỗi kết nối Google Apps Script!';
+    }
+  }
+
+  async function submitGalleryPhotos() {
+    const code = document.getElementById('btcOperatorCode').value.trim().toUpperCase();
+    const selectEl = document.getElementById('galleryTourSelect');
+    const tourId = selectEl.value;
+    const tourTitle = selectEl.options[selectEl.selectedIndex].text;
+    const caption = document.getElementById('galleryCaptionInput').value.trim();
+    const files = document.getElementById('galleryFilesInput').files;
+    const msgEl = document.getElementById('uploadStatusMsg');
+
+    if (!files || files.length === 0) {
+      msgEl.innerText = '⚠️ Vui lòng chọn ít nhất 1 ảnh thực địa!';
+      return;
+    }
+
+    let uploaded = 0;
+    for (let i = 0; i < files.length; i++) {
+      msgEl.innerText = `⏳ Đang tải ảnh ${i + 1}/${files.length} lên thư viện Drive...`;
+      const b64 = await compressImageToBase64(files[i], 1280, 0.82);
+      const res = await fetch(GOOGLE_SCRIPT_BACKEND, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'uploadGalleryPhoto',
+          operator_code: code,
+          tour_id: tourId,
+          tour_title: tourTitle,
+          caption: caption || files[i].name,
+          image_base64: b64
+        })
+      });
+      const data = await res.json();
+      if (data && data.success) uploaded++;
+    }
+
+    msgEl.innerText = `✔ Đã tải thành công ${uploaded}/${files.length} ảnh lên thư viện giải!`;
+    loadGalleryPhotos();
+  }
+
+  function filterTournaments(st, btn) {
+    activeStatusFilter = st;
+    document.querySelectorAll('.pill-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyTourFilters();
+  }
+
+  function applyTourFilters() {
+    const prov = document.getElementById('provinceFilterSelect').value;
+    const filtered = allTournaments.filter(t => {
+      const matchSt = (activeStatusFilter === 'ALL') || (String(t.status).toUpperCase() === activeStatusFilter);
+      const matchPr = (prov === 'ALL') || (String(t.province).includes(prov));
+      return matchSt && matchPr;
+    });
+
+    const grid = document.getElementById('tournamentGrid');
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="color:#94a3b8; font-size:13px;">Chưa có giải đấu nào phù hợp bộ lọc.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(t => {
+      const st = String(t.status || 'UPCOMING').toUpperCase();
+      const tagClass = st === 'LIVE' ? 'tag-live' : (st === 'ENDED' ? 'tag-ended' : 'tag-upcoming');
+      const tagLabel = st === 'LIVE' ? '🔴 ĐANG DIỄN RA' : (st === 'ENDED' ? 'KẾT THÚC' : 'SẮP TỚI');
+      const divs = String(t.divisions || 'Đôi 5.5, Đôi 6.0').split(',').map(d => `<span class="div-pill">${d.trim()}</span>`).join('');
+      const poster = t.poster_url || 'https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTIa59hI6v-FUR93OVEyOFEyJTyqTur8AjsnKSBKiYKGCuY7T0QhfpOx3qbPW2Bl0A4g3MeD9ndAxo4XAk';
+
+      return `
+        <div class="tour-card">
+          <div class="poster-wrap">
+            <img src="${poster}" alt="${t.title}">
+            <span class="tour-status-tag ${tagClass}">${tagLabel}</span>
+          </div>
+          <div class="tour-body">
+            <h4 class="tour-title">${t.title}</h4>
+            <div class="div-badges">${divs}</div>
+            <div class="tour-meta">
+              <div><i class="fa-regular fa-calendar"></i> ${t.date_range || 'Đang cập nhật'}</div>
+              <div><i class="fa-solid fa-location-dot"></i> ${t.venue ? t.venue + ' • ' : ''}${t.province || ''}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadTournaments() {
+    try {
+      const res = await fetch(`${GOOGLE_SCRIPT_BACKEND}?action=getTournaments`);
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.tournaments) && data.tournaments.length > 0) {
+        allTournaments = data.tournaments;
+        applyTourFilters();
+
+        const sel = document.getElementById('galleryTourSelect');
+        sel.innerHTML = '<option value="GENERAL">📸 Thư viện chung các giải PVR 2026</option>' +
+          allTournaments.map(t => `<option value="${t.tour_id}">${t.title}</option>`).join('');
+      }
+    } catch (e) {}
+  }
+
+  async function loadGalleryPhotos() {
+    try {
+      const res = await fetch(`${GOOGLE_SCRIPT_BACKEND}?action=getTournamentGallery&tour_id=ALL`);
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.photos) && data.photos.length > 0) {
+        const grid = document.getElementById('photoGalleryGrid');
+        grid.innerHTML = data.photos.map(p => `
+          <div class="photo-item" onclick="openLightbox('${p.image_url}', '${(p.caption || p.tour_title).replace(/'/g, '')}')">
+            <img src="${p.image_url}" alt="${p.caption}">
+            <div class="photo-caption">${p.caption || p.tour_title}</div>
+          </div>
+        `).join('');
+      }
+    } catch (e) {}
+  }
+
+  function openLightbox(url, caption) {
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightboxCaption').innerText = caption;
+    document.getElementById('photoLightbox').style.display = 'flex';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadTournaments();
+    loadGalleryPhotos();
+  });
+</script>
+</body>
+</html>
