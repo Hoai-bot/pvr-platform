@@ -1579,9 +1579,13 @@
       const data = await res.json();
       if (data.success) {
         const displayPhone = rawPhone.startsWith('0') ? rawPhone : '0' + rawPhone;
-        showToast(`🎉 Đã cấp thẻ ${data.pickId}! Mời đăng nhập ngay.`);
+        const isFem = gender.toLowerCase() === 'nữ';
+        const initCur = parseFloat(data.pvrCurrent) || (isFem ? 2.10 : 2.55);
+        const initMax = parseFloat(data.pvrMax) || initCur;
+        const initMin = parseFloat(data.pvrMin) || (isFem ? 2.00 : 2.40);
+        showToast(`🎉 Đã cấp thẻ ${data.pickId} (${initCur.toFixed(2)} PVR)! Mời đăng nhập ngay.`);
         allPlayers.unshift({
-          pickId: data.pickId, fullName, pvrCurrent: 2.60, pvrMax: 2.60, pvrMin: 2.45,
+          pickId: data.pickId, fullName, pvrCurrent: initCur, pvrMax: initMax, pvrMin: initMin,
           winsDoubles: 0, lossesDoubles: 0, winsSingles: 0, lossesSingles: 0,
           updatedAt: 'Vừa tạo', trust_tier: 'GREY', expiryStatus: { expired: false }, avatarUrl: '',
           phone: displayPhone, province, gender
