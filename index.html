@@ -595,7 +595,6 @@
     .pvr-nav-pill.nav-events { background: #1e1b4b; color: #c084fc !important; border-color: #a855f7; }
     .pvr-nav-pill.nav-doubles { background: #064e3b; color: #6ee7b7 !important; border-color: #10b981; }
     .pvr-nav-pill.nav-athlete { background: #1e293b; color: #facc15 !important; border-color: #facc15; }
-
   </style>
 </head>
 <body>
@@ -612,6 +611,7 @@
       <a href="/athletes" class="pvr-nav-pill nav-athlete">🪪 Hồ Sơ & BXH VĐV</a>
       <a href="/admin" class="pvr-nav-pill" style="background:#334155; color:#facc15 !important; border-color:#64748b;">🛡️ Quản Trị Mod</a>
     </nav>
+
     <!-- TOP BAR -->
     <div class="top-bar">
       <div class="brand-logo">
@@ -655,7 +655,7 @@
       </div>
     </div>
 
-    <!-- CÁC GIẢI ĐẤU SẮP DIỄN RA (ĐỒNG BỘ TỰ ĐỘNG TỪ GOOGLE SHEET) -->
+    <!-- CÁC GIẢI ĐẤU SẮP DIỄN RA -->
     <div class="upcoming-card-section">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div>
@@ -1060,7 +1060,6 @@
         </div>
       </div>
 
-      <!-- KHUNG HIỂN THỊ MÃ GIẢI & MẬT KHẨU SAU KHI TẠO THÀNH CÔNG -->
       <div id="pkg-issued-credentials-box" style="display:none; background:#0f172a; border:2px solid #10b981; border-radius:14px; padding:16px; text-align:left;">
         <div style="color:#10b981; font-weight:800; font-size:15px; margin-bottom:8px;">
           ✅ KHỞI TẠO TÀI KHOẢN TỔ CHỨC GIẢI THÀNH CÔNG!
@@ -1094,6 +1093,49 @@
       </div>
       <div class="video-frame-wrap">
         <iframe id="ld-replay-iframe" src="" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL NỘP HỒ SƠ CẤP THẺ PICK-ID QUA GOOGLE FORM -->
+  <div class="modal-overlay" id="pickid-submit-form-modal">
+    <div class="pkg-modal-box" style="border-color:#10b981; max-width:500px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:10px; margin-bottom:12px;">
+        <div>
+          <span style="background:#10b981; color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px;">PICK-ID INTAKE</span>
+          <h4 style="color:#fff; font-size:16px; margin-top:4px;">📝 NỘP HỒ SƠ CẤP THẺ PICK-ID</h4>
+        </div>
+        <button type="button" style="background:#ef4444; color:#fff; border:none; padding:5px 11px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="document.getElementById('pickid-submit-form-modal').style.display='none'">✕</button>
+      </div>
+
+      <p style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px; line-height:1.5;">
+        VĐV vui lòng chuẩn bị sẵn <strong>ảnh mặt trước CCCD</strong> và <strong>ảnh chụp màn hình điểm PVNA / Sport Connect / DUPR</strong> (nếu có) để tải lên biểu mẫu chính thức của Ban Tổ Chức:
+      </p>
+
+      <div style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:12px; margin-bottom:12px; font-size:12px; color:#94a3b8; line-height:1.6;">
+        • <strong style="color:#38bdf8;">Nam chưa có điểm:</strong> Áp sàn chuẩn <strong style="color:#facc15;">2.55 PVR</strong><br>
+        • <strong style="color:#f472b6;">Nữ chưa có điểm:</strong> Áp sàn chuẩn <strong style="color:#facc15;">2.10 PVR</strong><br>
+        • <strong style="color:#10b981;">Bảo mật:</strong> 12 số CCCD được mã hóa SHA-256 chống trùng nick.
+      </div>
+
+      <div style="background:rgba(250,204,21,0.12); border:1px solid #facc15; border-radius:8px; padding:8px 10px; margin-bottom:12px; font-size:11.5px; color:#fef08a; line-height:1.45;">
+        💡 <strong>Lưu ý khi mở trên điện thoại từ Zalo/Messenger:</strong> Nếu bị báo lỗi trình duyệt, hãy bấm dấu <strong>3 chấm (⋮)</strong> ở góc trên bên phải và chọn <strong>Mở bằng Chrome / Safari</strong>.
+      </div>
+
+      <a id="btn-go-google-form-pickid" href="https://forms.gle/r55T6BAwiKSBkMnu5" target="_blank" rel="noopener noreferrer" class="btn-hero" style="width:100%; justify-content:center; background:linear-gradient(135deg,#10b981,#059669); color:#fff; margin-bottom:12px;">
+        🚀 MỞ BIỂU MẪU NỘP HỒ SƠ VĐV ➔
+      </a>
+
+      <div style="border-top:1px dashed #334155; padding-top:10px; margin-top:6px;">
+        <label style="font-size:11px; color:#facc15; font-weight:700; display:block; margin-bottom:5px;">
+          ⚙️ Cài đặt Link Google Form của BTC (Lưu cố định trên trình duyệt):
+        </label>
+        <div style="display:flex; gap:6px;">
+          <input type="url" id="custom-pickid-google-form-url" class="form-input" style="font-size:11.5px; padding:8px 10px;" placeholder="Dán link https://forms.gle/...">
+          <button type="button" onclick="window.savePickIdGoogleFormUrl()" style="background:#0284c7; color:#fff; border:none; border-radius:8px; padding:0 14px; font-size:11.5px; font-weight:800; cursor:pointer; white-space:nowrap;">
+            💾 Lưu Link
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1276,8 +1318,6 @@
     template: 'compact2'
   };
 
-  // Telegram alerts are relayed securely via Google Apps Script V9_6 backend
-
   let currentSelectedPkg = {
     code: 'CLUB_SINGLE',
     nameVi: 'Gói Giải Lẻ Club',
@@ -1297,7 +1337,6 @@
     document.getElementById('pkg-bank-acc').innerText = COMPANY_BANK_CONFIG.accountNo;
     document.getElementById('pkg-bank-owner').innerText = COMPANY_BANK_CONFIG.accountName;
 
-    // Reset giao diện về form nhập liệu mỗi khi mở Pop-up mới
     document.getElementById('pkg-checkout-form-area').style.display = 'block';
     document.getElementById('pkg-issued-credentials-box').style.display = 'none';
 
@@ -1358,7 +1397,6 @@
       bankAccount: `${COMPANY_BANK_CONFIG.bankId} - ${COMPANY_BANK_CONFIG.accountNo}`
     };
 
-    // 1. Gọi Google Apps Script trước để lưu Sheet & lấy Partner ID + Password tự sinh
     let issuedPartnerId = '';
     let issuedPassword = '';
     try {
@@ -1376,7 +1414,6 @@
       console.warn('Apps Script order sync:', e);
     }
 
-    // Dự phòng sinh mã ngay trên trình duyệt nếu Apps Script chưa kịp trả về
     if (!issuedPartnerId) {
       const cleanPrefix = orgName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6) || 'CLUB';
@@ -1386,7 +1423,6 @@
       issuedPassword = `Pass_${Math.floor(100000 + Math.random() * 900000)}`;
     }
 
-    // 2. Chuyển tiếp thông báo kèm Mã Giải & Mật Khẩu BTC qua Backend Apps Script (Bảo mật Token)
     const teleText = [
       `🚨 *ĐƠN ĐĂNG KÝ GÓI MỞ GIẢI PVR MỚI (VERCEL)*`,
       `📦 *Gói:* ${currentSelectedPkg.nameVi} (${currentSelectedPkg.amount.toLocaleString('vi-VN')}đ)`,
@@ -1415,7 +1451,6 @@
       ? '✅ TÔI ĐÃ CHUYỂN KHOẢN & GỬI YÊU CẦU MỞ GÓI'
       : '✅ I HAVE TRANSFERRED & SUBMIT REQUEST';
 
-    // 3. Hiển thị ngay Mã Giải & Mật Khẩu trên Pop-up để khách copy dùng ngay
     document.getElementById('issued-partner-id').innerText = issuedPartnerId;
     document.getElementById('issued-partner-pass').innerText = issuedPassword;
     document.getElementById('issued-ai-quota').innerText = `${currentSelectedPkg.aiQuota} lượt`;
@@ -1427,7 +1462,6 @@
       : `🎉 Issued code ${issuedPartnerId} & sent to Telegram!`);
   };
 
-  // Tự động tải danh sách các giải đấu sắp diễn ra từ Google Sheet
   (async function syncUpcomingTournamentsToLanding() {
     const grid = document.getElementById('upcoming-tournaments-grid');
     if (!grid) return;
@@ -1454,53 +1488,14 @@
       }
     } catch (e) {}
   })();
-</script>
 
-  <!-- MODAL NỘP HỒ SƠ CẤP THẺ PICK-ID QUA GOOGLE FORM -->
-  <div class="modal-overlay" id="pickid-submit-form-modal">
-    <div class="pkg-modal-box" style="border-color:#10b981; max-width:500px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:10px; margin-bottom:12px;">
-        <div>
-          <span style="background:#10b981; color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px;">PICK-ID INTAKE</span>
-          <h4 style="color:#fff; font-size:16px; margin-top:4px;">📝 NỘP HỒ SƠ CẤP THẺ PICK-ID</h4>
-        </div>
-        <button type="button" style="background:#ef4444; color:#fff; border:none; padding:5px 11px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="document.getElementById('pickid-submit-form-modal').style.display='none'">✕</button>
-      </div>
-
-      <p style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px; line-height:1.5;">
-        VĐV vui lòng chuẩn bị sẵn <strong>ảnh mặt trước CCCD</strong> và <strong>ảnh chụp màn hình điểm PVNA / Sport Connect / DUPR</strong> (nếu có) để tải lên biểu mẫu chính thức của Ban Tổ Chức:
-      </p>
-
-      <div style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:12px; margin-bottom:14px; font-size:12px; color:#94a3b8; line-height:1.6;">
-        • <strong style="color:#38bdf8;">Nam chưa có điểm:</strong> Áp sàn chuẩn <strong style="color:#facc15;">2.55 PVR</strong><br>
-        • <strong style="color:#f472b6;">Nữ chưa có điểm:</strong> Áp sàn chuẩn <strong style="color:#facc15;">2.10 PVR</strong><br>
-        • <strong style="color:#10b981;">Bảo mật:</strong> 12 số CCCD được mã hóa SHA-256 chống trùng nick.
-      </div>
-
-      <a id="btn-go-google-form-pickid" href="https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn-hero" style="width:100%; justify-content:center; background:linear-gradient(135deg,#10b981,#059669); color:#fff; margin-bottom:12px;">
-        🚀 MỞ BIỂU MẪU NỘP HỒ SƠ VĐV ➔
-      </a>
-
-      <div style="border-top:1px dashed #334155; padding-top:10px; margin-top:6px;">
-        <label style="font-size:11px; color:#facc15; font-weight:700; display:block; margin-bottom:5px;">
-          ⚙️ Cài đặt Link Google Form của BTC (Lưu cố định trên trình duyệt):
-        </label>
-        <div style="display:flex; gap:6px;">
-          <input type="url" id="custom-pickid-google-form-url" class="form-input" style="font-size:11.5px; padding:8px 10px;" placeholder="Dán link https://forms.gle/... hoặc https://docs.google.com/forms/...">
-          <button type="button" onclick="window.savePickIdGoogleFormUrl()" style="background:#0284c7; color:#fff; border:none; border-radius:8px; padding:0 14px; font-size:11.5px; font-weight:800; cursor:pointer; white-space:nowrap;">
-            💾 Lưu Link
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<script>
   (function initPickIdFormButton() {
-    const DEFAULT_PICKID_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform?usp=sharing';
+    const DEFAULT_PICKID_FORM_URL = 'https://forms.gle/r55T6BAwiKSBkMnu5';
     function getStoredFormUrl() {
       try {
-        return localStorage.getItem('pvr_pickid_google_form_url') || DEFAULT_PICKID_FORM_URL;
+        const stored = localStorage.getItem('pvr_pickid_google_form_url');
+        if (stored && stored.includes('forms.gle')) return stored;
+        return DEFAULT_PICKID_FORM_URL;
       } catch (e) {
         return DEFAULT_PICKID_FORM_URL;
       }
@@ -1532,3 +1527,4 @@
 
 </body>
 </html>
+```[cite: 8]
