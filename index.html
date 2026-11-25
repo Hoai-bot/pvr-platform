@@ -604,6 +604,7 @@
 
   <div class="container">
     <nav class="pvr-global-nav">
+      <a href="javascript:void(0)" onclick="window.openPickIdSubmissionModal()" class="pvr-nav-pill" style="background:#10b981; color:#fff !important; border-color:#34d399;">📝 Nộp Hồ Sơ Thẻ PICK-ID</a>
       <a href="/ai-passport" class="pvr-nav-pill nav-ai">🚀 AI Chấm Trình</a>
       <a href="/live-hub" class="pvr-nav-pill nav-hub">🏟️ Sân Đấu & VAR</a>
       <a href="/events" class="pvr-nav-pill nav-events">📅 Sự Kiện & Ảnh Giải</a>
@@ -642,6 +643,9 @@
         <strong>PVR (Pickleball Verified Rating)</strong> tích hợp phân tích động học cơ thể qua Video AI (MediaPipe Pose), thẻ định danh duy nhất <strong>PICK-ID</strong> (mã hóa SHA-256 từ 12 số CCCD theo Nghị định 13/2023/NĐ-CP) cùng <strong>Phòng Check VAR Trọng Tài</strong> tua chậm từng khung hình ngay trên điện thoại.
       </p>
       <div class="hero-cta-group">
+        <button type="button" onclick="window.openPickIdSubmissionModal()" class="btn-hero" style="background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 6px 20px rgba(16,185,129,0.4);" data-vi="📝 NỘP HỒ SƠ THẺ PICK-ID" data-en="📝 SUBMIT PICK-ID PROFILE">
+          📝 NỘP HỒ SƠ THẺ PICK-ID
+        </button>
         <a href="/ai-passport" class="btn-hero btn-hero-primary" data-vi="🎥 KIỂM ĐỊNH TRÌNH PVR BẰNG VIDEO AI" data-en="🎥 VERIFY PVR RATING VIA AI VIDEO">
           🎥 KIỂM ĐỊNH TRÌNH PVR BẰNG VIDEO AI
         </a>
@@ -1450,7 +1454,9 @@
       }
     } catch (e) {}
   })();
-</script><!-- MODAL NỘP HỒ SƠ CẤP THẺ PICK-ID QUA GOOGLE FORM -->
+</script>
+
+  <!-- MODAL NỘP HỒ SƠ CẤP THẺ PICK-ID QUA GOOGLE FORM -->
   <div class="modal-overlay" id="pickid-submit-form-modal">
     <div class="pkg-modal-box" style="border-color:#10b981; max-width:500px;">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:10px; margin-bottom:12px;">
@@ -1471,7 +1477,7 @@
         • <strong style="color:#10b981;">Bảo mật:</strong> 12 số CCCD được mã hóa SHA-256 chống trùng nick.
       </div>
 
-      <a id="btn-go-google-form-pickid" href="https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform" target="_blank" rel="noopener noreferrer" class="btn-hero" style="width:100%; justify-content:center; background:linear-gradient(135deg,#10b981,#059669); color:#fff; margin-bottom:12px;">
+      <a id="btn-go-google-form-pickid" href="https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn-hero" style="width:100%; justify-content:center; background:linear-gradient(135deg,#10b981,#059669); color:#fff; margin-bottom:12px;">
         🚀 MỞ BIỂU MẪU NỘP HỒ SƠ VĐV ➔
       </a>
 
@@ -1485,10 +1491,13 @@
             💾 Lưu Link
           </button>
         </div>
+      </div>
     </div>
+  </div>
+
 <script>
   (function initPickIdFormButton() {
-    const DEFAULT_PICKID_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform';
+    const DEFAULT_PICKID_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdrkIIZILH5ZPtMb5KA9Snux-jXIbwe207DLiTQi_SV54lBdg/viewform?usp=sharing';
     function getStoredFormUrl() {
       try {
         return localStorage.getItem('pvr_pickid_google_form_url') || DEFAULT_PICKID_FORM_URL;
@@ -1520,5 +1529,6 @@
     };
   })();
 </script>
+
 </body>
 </html>
