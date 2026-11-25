@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- MediaPipe Pose Client-side Biomechanics Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 
   <style>
@@ -1180,7 +1179,6 @@
     return lang === 'vi' ? 'Newbie / Mới chơi (2.00 – 2.19)' : 'Newbie (2.00 – 2.19)';
   }
 
-  // Hàm tính góc 3 điểm (độ) cho khớp xương
   function calcJointAngleDeg(a, b, c) {
     const abX = a.x - b.x, abY = a.y - b.y;
     const cbX = c.x - b.x, cbY = c.y - b.y;
@@ -1192,7 +1190,6 @@
     return (Math.acos(cosVal) * 180) / Math.PI;
   }
 
-  // Phân tích khung xương thật trên trình duyệt (Client-side MediaPipe Pose + Pixel Motion Fallback)
   async function analyzeLocalVideoBiomechanics(file, courtPos) {
     return new Promise((resolve) => {
       try {
@@ -1206,20 +1203,19 @@
         const ctx = canvas.getContext('2d');
 
         video.onloadedmetadata = async () => {
-          const duration = Math.min(25, video.duration || 8);
-          const sampleCount = 12;
-          const w = Math.min(640, video.videoWidth || 640);
-          const h = Math.round((w / (video.videoWidth || 640)) * (video.videoHeight || 360));
+          const duration = Math.min(35, video.duration || 10);
+          const sampleCount = 18;
+          const w = Math.min(720, video.videoWidth || 720);
+          const h = Math.round((w / (video.videoWidth || 720)) * (video.videoHeight || 405));
           canvas.width = w;
           canvas.height = h;
 
-          // Cắt vùng ROI theo vị trí VĐV đã chọn để không nhầm với người đánh cùng
           const isNear = courtPos.startsWith('near');
           const isRight = courtPos.endsWith('right');
-          const roiX = isRight ? Math.floor(w * 0.42) : 0;
-          const roiY = isNear ? Math.floor(h * 0.35) : Math.floor(h * 0.12);
-          const roiW = Math.floor(w * 0.58);
-          const roiH = isNear ? Math.floor(h * 0.65) : Math.floor(h * 0.58);
+          const roiX = isRight ? Math.floor(w * 0.25) : 0;
+          const roiY = isNear ? Math.floor(h * 0.22) : Math.floor(h * 0.08);
+          const roiW = Math.floor(w * 0.75);
+          const roiH = isNear ? Math.floor(h * 0.78) : Math.floor(h * 0.65);
 
           const roiCanvas = document.createElement('canvas');
           roiCanvas.width = roiW;
@@ -1236,8 +1232,8 @@
               poseDetector.setOptions({
                 modelComplexity: 1,
                 smoothLandmarks: true,
-                minDetectionConfidence: 0.45,
-                minTrackingConfidence: 0.45
+                minDetectionConfidence: 0.40,
+                minTrackingConfidence: 0.40
               });
               poseDetector.onResults((results) => {
                 latestLandmarks = results.poseLandmarks || null;
@@ -1245,8 +1241,8 @@
             } catch (e) { poseDetector = null; }
           }
 
-          const elbowAngles = [];
-          const kneeAngles = [];
+          const activeElbows = [];
+          const activeKnees = [];
           const wristSpeeds = [];
           let prevWrist = null;
           let prevGray = null;
@@ -1263,7 +1259,6 @@
             ctx.drawImage(video, 0, 0, w, h);
             roiCtx.drawImage(canvas, roiX, roiY, roiW, roiH, 0, 0, roiW, roiH);
 
-            // Đo biến thiên chuyển động điểm ảnh trong vùng VĐV (Pixel Motion Energy)
             const imgData = roiCtx.getImageData(0, 0, roiW, roiH).data;
             const curGray = new Float32Array(roiW * roiH);
             let diffSum = 0;
@@ -1275,30 +1270,32 @@
             if (prevGray) pixelMotions.push(diffSum / (roiW * roiH));
             prevGray = curGray;
 
-            // Chạy MediaPipe Pose trên vùng VĐV đã cắt
             if (poseDetector) {
               latestLandmarks = null;
               try {
                 await poseDetector.send({ image: roiCanvas });
                 if (latestLandmarks && latestLandmarks.length >= 29) {
                   const lm = latestLandmarks;
-                  // Khuỷu tay phải (12-14-16) & trái (11-13-15)
                   const rElbow = calcJointAngleDeg(lm[12], lm[14], lm[16]);
                   const lElbow = calcJointAngleDeg(lm[11], lm[13], lm[15]);
                   const activeElbow = (lm[16].visibility > lm[15].visibility) ? rElbow : lElbow;
-                  if (activeElbow > 45 && activeElbow < 178) elbowAngles.push(activeElbow);
 
-                  // Đầu gối phải (24-26-28) & trái (23-25-27)
                   const rKnee = calcJointAngleDeg(lm[24], lm[26], lm[28]);
                   const lKnee = calcJointAngleDeg(lm[23], lm[25], lm[27]);
                   const avgK = (rKnee + lKnee) / 2;
-                  if (avgK > 80 && avgK < 179) kneeAngles.push(avgK);
 
-                  // Tốc độ vung cổ tay giữa các khung hình
+                  const isReadyStance = avgK < 164 || activeElbow < 158;
+                  if (isReadyStance && activeElbow > 45 && activeElbow < 176) {
+                    activeElbows.push(activeElbow);
+                  }
+                  if (isReadyStance && avgK > 80 && avgK < 175) {
+                    activeKnees.push(avgK);
+                  }
+
                   const curWrist = (lm[16].visibility > lm[15].visibility) ? lm[16] : lm[15];
                   if (prevWrist) {
                     const dist = Math.hypot(curWrist.x - prevWrist.x, curWrist.y - prevWrist.y);
-                    wristSpeeds.push(dist);
+                    if (dist > 0.015) wristSpeeds.push(dist);
                   }
                   prevWrist = curWrist;
                 }
@@ -1311,38 +1308,37 @@
             try { poseDetector.close(); } catch (e) {}
           }
 
-          const avgMotion = pixelMotions.length > 0
-            ? pixelMotions.reduce((a, b) => a + b, 0) / pixelMotions.length
-            : 6.5;
+          const sortedMotion = [...pixelMotions].sort((a, b) => b - a);
+          const topMotions = sortedMotion.slice(0, Math.max(1, Math.ceil(sortedMotion.length * 0.6)));
+          const peakMotion = topMotions.length > 0
+            ? topMotions.reduce((a, b) => a + b, 0) / topMotions.length
+            : 8.5;
 
-          if (elbowAngles.length >= 2 && kneeAngles.length >= 2) {
-            const avgElbow = elbowAngles.reduce((a, b) => a + b, 0) / elbowAngles.length;
-            const avgKnee = kneeAngles.reduce((a, b) => a + b, 0) / kneeAngles.length;
+          if (activeElbows.length >= 2 && activeKnees.length >= 2) {
+            activeElbows.sort((a, b) => a - b);
+            activeKnees.sort((a, b) => a - b);
+            const medElbow = activeElbows[Math.floor(activeElbows.length / 2)];
+            const medKnee = activeKnees[Math.floor(activeKnees.length / 2)];
             const avgSpeed = wristSpeeds.length > 0
               ? wristSpeeds.reduce((a, b) => a + b, 0) / wristSpeeds.length
-              : 0.08;
+              : 0.09;
 
-            // Tính điểm Biomechanics chuẩn (38 -> 94):
-            // - Gối chùng chuẩn (122° - 140°) điểm cao; gối thẳng đơ (> 162°) điểm thấp (newbie)
-            const kneeScore = Math.max(10, Math.min(40, 40 - Math.abs(avgKnee - 130) * 0.75));
-            // - Khuỷu tay gọn (95° - 128°) điểm cao; vung thẳng cánh tay (> 155°) điểm thấp
-            const elbowScore = Math.max(10, Math.min(35, 35 - Math.abs(avgElbow - 112) * 0.55));
-            // - Tốc độ phản xạ cổ tay & di chuyển sân
-            const agilityScore = Math.max(8, Math.min(25, avgSpeed * 130 + avgMotion * 0.6));
+            const kneeScore = Math.max(14, Math.min(40, 40 - Math.abs(medKnee - 130) * 0.65));
+            const elbowScore = Math.max(14, Math.min(35, 35 - Math.abs(medElbow - 114) * 0.50));
+            const agilityScore = Math.max(12, Math.min(25, avgSpeed * 125 + peakMotion * 0.75));
 
-            const totalBio = Math.max(38.0, Math.min(94.5, kneeScore + elbowScore + agilityScore));
+            const totalBio = Math.max(45.0, Math.min(95.0, kneeScore + elbowScore + agilityScore));
             resolve({
               measured: true,
-              elbow: `${avgElbow.toFixed(1)}°`,
-              knee: `${avgKnee.toFixed(1)}°`,
+              elbow: `${medElbow.toFixed(1)}°`,
+              knee: `${medKnee.toFixed(1)}°`,
               score100: totalBio.toFixed(1)
             });
           } else {
-            // Fallback động theo mật độ chuyển động thực tế trong khung hình (không bao giờ trả về hằng số cứng 76.7)
-            const motionNorm = Math.max(1.5, Math.min(18.0, avgMotion));
-            const dynamicBio = 40.0 + ((motionNorm - 1.5) / 16.5) * 44.0;
-            const estKnee = 162.0 - ((dynamicBio - 40.0) / 44.0) * 30.0;
-            const estElbow = 148.0 - ((dynamicBio - 40.0) / 44.0) * 34.0;
+            const motionNorm = Math.max(2.0, Math.min(16.0, peakMotion));
+            const dynamicBio = 48.0 + ((motionNorm - 2.0) / 14.0) * 42.0;
+            const estKnee = 152.0 - ((dynamicBio - 48.0) / 42.0) * 24.0;
+            const estElbow = 142.0 - ((dynamicBio - 48.0) / 42.0) * 28.0;
             resolve({
               measured: true,
               elbow: `${estElbow.toFixed(1)}°`,
@@ -1409,7 +1405,6 @@
         false
       );
 
-      // Quét khung xương thật ngay trên trình duyệt
       clientMeasuredBio = await analyzeLocalVideoBiomechanics(uploadFile, selectedValues.court_pos);
 
       showInlineStatus(
@@ -1474,7 +1469,6 @@
           pollTaskStatus(data.task_id, vdvName, vdvCccd);
         }
       } else {
-        // Nếu server bận nhưng trình duyệt đã đo được khung xương thật từ file video thì vẫn xuất thẻ chuẩn xác
         if (clientMeasuredBio && clientMeasuredBio.measured) {
           renderPassportCard({
             biomechanics_score_100: clientMeasuredBio.score100,
@@ -1538,8 +1532,8 @@
       cssClass: 'badge-certified tick-badge-blue',
       badgeText: currentLang === 'vi' ? '🔵 TICK XANH • AI VERIFIED' : '🔵 BLUE TICK • AI VERIFIED',
       descText: currentLang === 'vi'
-        ? 'Xác thực sinh học AI V9.0 • Đạt ≥ 5 trận giải hoặc Mod duyệt sẽ lên Tick Vàng'
-        : 'AI V9.0 Biomechanics Verified • Upgrades to Gold Tick at ≥ 5 matches or Mod check'
+        ? 'Xác thực sinh học AI V10 • Đạt ≥ 5 trận giải hoặc Mod duyệt sẽ lên Tick Vàng'
+        : 'AI V10 Biomechanics Verified • Upgrades to Gold Tick at ≥ 5 matches or Mod check'
     };
   }
 
@@ -1560,14 +1554,12 @@
     let elbowVal = bioAudit.avg_elbow_angle || resData.avg_elbow_angle || resData.e || '';
     let kneeVal = bioAudit.avg_knee_angle || resData.avg_knee_angle || resData.k || '';
 
-    // Nếu server trả về số fallback cứng (76.7 / 116.8° / 133.5°) hoặc rỗng, ưu tiên số đo thật từ clientMeasuredBio
     const isServerFallback = !compositeValRaw || parseFloat(compositeValRaw) === 76.7 || String(elbowVal).includes('116.8');
     if (clientMeasuredBio && clientMeasuredBio.measured && isServerFallback) {
       compositeValRaw = clientMeasuredBio.score100;
       elbowVal = clientMeasuredBio.elbow;
       kneeVal = clientMeasuredBio.knee;
     } else if (!compositeValRaw) {
-      // Nếu dán link YouTube không đo được khung xương trực tiếp, đưa về sàn cơ bản 45.0 (không thổi phồng 76.7)
       compositeValRaw = '45.0';
       elbowVal = elbowVal || '142.0°';
       kneeVal = kneeVal || '154.0°';
@@ -1582,17 +1574,37 @@
     const isFemaleAi = String(activeGender).toLowerCase() === 'nữ';
     const genderFloor = isFemaleAi ? 2.10 : 2.55;
 
-    // Quy đổi điểm PVR từ chỉ số Biomechanics thực tế (compNum: 35 -> 95)
-    const baseStart = isFemaleAi ? 2.05 : 2.50;
-    const spanRange = isFemaleAi ? 1.25 : 1.05;
-    let bioPvr = baseStart + (Math.max(0, compNum - 35.0) / 60.0) * spanRange;
+    // =========================================================================
+    // UNIVERSAL PVR RATING ENGINE V10 (CHUẨN HÓA ĐA TẦNG NAM & NỮ MỌI TRÌNH)
+    // =========================================================================
+    // 1. Ánh xạ phi tuyến từ Điểm Biomechanics thực đo (compNum: 35 -> 100) sang PVR kỹ thuật
+    //    - Nam: 40 -> 2.55 | 60 -> 2.78 | 76.5 -> 3.00 | 90 -> 3.35 | 98 -> 3.65
+    //    - Nữ:  40 -> 2.10 | 60 -> 2.36 | 76.5 -> 2.62 | 90 -> 3.00 | 98 -> 3.35
+    const normBio = Math.max(0, Math.min(1, (compNum - 40.0) / 58.0));
+    const curvedBio = Math.pow(normBio, 1.18);
+    const skillPvr = isFemaleAi
+      ? (2.10 + curvedBio * 1.25)
+      : (2.55 + curvedBio * 1.12);
 
-    let finalScore = bioPvr;
-    if (totalInput >= 5) {
-      const rateDelta = (winRate - 0.45) * 0.45;
-      const volDelta = Math.min(0.05, (totalInput / 200) * 0.05);
-      finalScore = bioPvr * 0.65 + ((isFemaleAi ? 2.55 : 2.95) + rateDelta + volDelta) * 0.35;
-    }
+    // 2. Điểm neo theo Hạng Đấu thực tế mà VĐV đã thi đấu (ngăn tình trạng thắng giải thấp bị thổi phồng lên Pro)
+    const tierAnchorMap = {
+      beginner: isFemaleAi ? 2.15 : 2.58,
+      newbie_plus: 2.32,
+      social: isFemaleAi ? 2.55 : 2.85,
+      intermediate: isFemaleAi ? 2.95 : 3.12,
+      semi_pro: isFemaleAi ? 3.35 : 3.42,
+      pro: isFemaleAi ? 3.65 : 3.75
+    };
+    const tierAnchor = tierAnchorMap[selectedTierKey] || skillPvr;
+
+    // 3. Điểm thực chiến từ tỷ lệ thắng/thua & bề dày kinh nghiệm trận đấu
+    const rateDelta = (winRate - 0.50) * 0.70;
+    const expBonus = Math.min(0.06, (totalInput / 250) * 0.06);
+    const matchPvr = tierAnchor + rateDelta + expBonus;
+
+    // 4. Trọng số tin cậy động w = N / (N + 40), tối đa 65% cho dữ liệu trận đấu
+    const matchWeight = totalInput > 0 ? Math.min(0.65, totalInput / (totalInput + 40)) : 0;
+    const finalScore = skillPvr * (1 - matchWeight) + matchPvr * matchWeight;
 
     let numericScore = parseFloat(Math.max(genderFloor, Math.min(5.50, finalScore)).toFixed(2));
     const ratingVal = `${numericScore.toFixed(2)} PVR`;
@@ -1623,7 +1635,6 @@
       trustDescEl.innerText = trustInfo.descText;
     }
 
-    // Kiểm tra vượt trần đúng theo Giới tính và Hạng đăng ký đã chọn
     const tierList = isFemaleAi ? GENDER_TIERS.Nữ : GENDER_TIERS.Nam;
     const chosenTierObj = tierList.find(t => t.value === selectedTierKey);
     const tierCap = chosenTierObj ? chosenTierObj.maxPvr : 5.50;
